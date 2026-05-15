@@ -6,14 +6,15 @@ This tool allows researchers to intuitively explore and analyze complex black ho
 * **Event Detection & Navigation**: Automatically detects `MERGE`, `EXCHANGE` events from simulation data. Jump directly to specific events using the in-app VR UI.
 * **Automated Data Pipeline**: A single Python script parses raw HDF5/DAT outputs and automatically transfers the processed data to your Quest headset via ADB.
 
-* ## 📦 Package Contents (Releases)
+* ## Package Contents
 End-users do not need to download the source code or install Unity. Please download the following files from the [Releases](https://github.com/gkawa08/nbody-vr-visualizer-unity/releases) page:
 
 * `NBodyVR_v1.0.apk`: The VR application for Meta Quest.
 * `nbody_bh_data.py`: The data processing and transfer script.
 * `sample_data/`: (Optional) Sample HDF5 and DAT files to test the pipeline.
 
-## 🛠 Prerequisites
+
+## Prerequisites
 * **Hardware**: Meta Quest 2 (Developer Mode must be enabled).
 * **Software (PC)**:
   * Python 3.8+
@@ -23,32 +24,32 @@ End-users do not need to download the source code or install Unity. Please downl
 ### Python Dependencies
 pip install numpy h5py
 
-🚀 Quick Start Guide
-1. Install the App (First time only)
-  1. Connect your Meta Quest to your PC via USB.
-  2. Install NBodyVR_v1.0.apk using SideQuest or the ADB command:
+
+## Quick Start Guide
+1\. Install the App (First time only)
+  1\. Connect your Meta Quest to your PC via USB.
+  2\. Install NBodyVR_v1.0.apk using SideQuest or the ADB command:
     Bash
     adb install NBodyVR_v1.0.apk
 
 
-2. Prepare Your Data
+2\. Prepare Your Data
 Place your N-body simulation output files in the same directory as the Python script:
-  snapdata.hdf5
-  *_output.dat
+* snapdata.hdf5
+* *_output.dat
 
-3. Run the Pipeline
+3\. Run the Pipeline
 Run the Python script from your terminal:
-
 Bash
 python BH_data_mp.py
 
 
 Follow the interactive prompts. The script will:
-  1. Extract BH data from snapdata.hdf5 into bh_history.csv.
-  2. Parse .dat files for events into bh_events.csv.
-  3. Automatically transfer files to your Quest headset.
+* Extract BH data from snapdata.hdf5 into bh_history.csv.
+* Parse .dat files for events into bh_events.csv.
+* Automatically transfer files to your Quest headset.
 
-4. Experience in VR
+4\. Experience in VR
 Launch NBody-VR from your "Unknown Sources" library.
 
-📝 License
+## License
