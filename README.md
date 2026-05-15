@@ -21,7 +21,6 @@ End-users do not need to download the source code or install Unity. Please downl
   * SideQuest (or similar tool for installing APKs).
 
 ### Python Dependencies
-```bash
 pip install numpy h5py
 
 🚀 Quick Start Guide
