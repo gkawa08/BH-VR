@@ -52,4 +52,37 @@ Follow the interactive prompts. The script will:
 4\. Experience in VR
 Launch NBody-VR from your "Unknown Sources" library.
 
+# NBody-VR Visualizer: Manual Installation Guide
+
+If you already have the processed CSV data (`bh_history.csv` and `bh_events.csv`) and the `.apk` file, you can run the visualization directly on your Meta Quest without using the Python pipeline.
+
+### 1. Install the Application
+1. Connect your Meta Quest to your PC via USB (ensure Developer Mode is enabled).
+2. Install `NBodyVR_v1.0.apk` using SideQuest, or via terminal using ADB:
+   ```bash
+   adb install NBodyVR_v1.0.apk
+   ```
+
+### 2. Initialize the App Directory (Crucial Step)
+You must launch the app at least once to allow the Android system to generate the dedicated data folder.
+1. Put on your headset and launch **NBodyVR** from the "Unknown Sources" library.
+2. A red "Data missing!" error will appear in the VR space. This is expected behavior.
+3. Quit the application.
+
+### 3. Transfer the CSV Files
+Move your `bh_history.csv` and `bh_events.csv` files into the newly created app directory on your headset.
+
+**Option A: Using ADB (Terminal)**
+```bash
+adb push bh_history.csv /sdcard/Android/data/com.Meta.NBodyVR/files/
+adb push bh_events.csv /sdcard/Android/data/com.Meta.NBodyVR/files/
+```
+
+**Option B: Using Windows File Explorer / SideQuest**
+Navigate to the following directory on your Quest and copy the CSV files there:
+`Internal shared storage > Android > data > com.Meta.NBodyVR > files`
+
+### 4. Run the Visualization
+Relaunch **NBodyVR** on your headset. The app will automatically load the CSV data, allowing you to explore the N-body interactions.
+
 ## License
