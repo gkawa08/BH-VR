@@ -72,11 +72,14 @@ You must launch the app at least once to allow the Android system to generate th
 ### 3. Transfer the CSV Files
 Move your `bh_history.csv` and `bh_events.csv` files into the newly created app directory on your headset.
 
-**Using ADB (Terminal)**
+**Option A: Using ADB (Terminal)**
 ```bash
 adb push bh_history.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 adb push bh_events.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 ```
+**Option B: Using Windows File Explorer / SideQuest**
+Navigate to the following directory on your Quest and copy the CSV files there:
+`Internal shared storage > Android > data > com.kawashima.bhvisualizer > files`
 
 ### 4. Run the Visualization
 Relaunch **NBodyVR** on your headset. The app will automatically load the CSV data, allowing you to explore the N-body interactions.
