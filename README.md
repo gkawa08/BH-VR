@@ -74,8 +74,8 @@ Move your `bh_history.csv` and `bh_events.csv` files into the newly created app 
 
 **Using ADB (Terminal)**
 ```bash
-adb push bh_history.csv /sdcard/Android/data/com.Meta.NBodyVR/files/
-adb push bh_events.csv /sdcard/Android/data/com.Meta.NBodyVR/files/
+adb push bh_history.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
+adb push bh_events.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 ```
 
 ### 4. Run the Visualization
