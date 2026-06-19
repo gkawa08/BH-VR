@@ -1,9 +1,17 @@
-A VR visualization tool for N-body astrophysical simulations (specifically focusing on black hole interactions) designed for Meta Quest 2 and Meta Quest 3 headsets. This tool allows researchers to intuitively explore and analyze complex black hole (BH) dynamics, such as binary formations, exchange interactions (EXCHANGE), mergers (MERGE), and escapes (ESCAPE) in an immersive 3D space.
+# NBody-VR Visualizer
+
+A VR visualization tool for N-body astrophysical simulations (specifically focusing on black hole interactions) designed for Meta Quest 2 and Meta Quest 3 headsets. This tool allows researchers to intuitively explore and analyze complex black hole (BH) dynamics, such as binary formations, exchange interactions (EXCHANGE) and mergers (MERGE) in an immersive 3D space.
+
+## 🎬 Demo Video
+
+https://github.com/user-attachments/assets/0f4fc610-3d7a-4cc5-8b77-d30dd83720cb
+
+---
 
 ## 🌟 Key Features
 
 * **3D Orbit Visualization:** Renders the spatial orbits and interactive dynamics of black holes.
-* **Event Detection & Highlighting:** Automatically detects and highlights key astrophysical events ("MERGE", "EXCHANGE", "ESCAPE") directly within the VR environment.
+* **Event Detection & Highlighting:** Automatically detects and highlights key astrophysical events ("MERGE", "EXCHANGE") directly within the VR environment.
 * **Custom Data Pipeline:** Includes a Python data pipeline script to parse raw simulation outputs (".hdf5" and "*_output.dat" from NBody6) into lightweight CSV files optimized for mobile VR performance.
 * **Standalone Playback:** Run simulations standalone on your Quest headset without needing a constant PC connection.
 
@@ -32,9 +40,9 @@ Navigate to the [Releases](../../releases) page of this repository and download 
 Connect your Quest headset to your computer via USB and install using one of the following methods:
 * **Via SideQuest:** Click the "Install APK file from folder" icon (top-right menu) and select the downloaded APK.
 * **Via Terminal (ADB):**
-  """bash
+  ```bash
   adb install NBodyVR_v1.0.apk
-  """
+  ```
 
 ### 3. First-Time Launch (⚠️ CRITICAL)
 After installing the APK, **you must launch the application at least once on the headset before transferring your data files.**
@@ -51,21 +59,21 @@ Use the included "nbody_bh_data.py" script to extract and transfer simulation da
 ### 1. Execute the Script
 Run the script within the directory containing your simulation data (HDF5/DAT). On its first run, it will automatically check for and offer to install any missing dependencies ("numpy", "h5py").
 
-"""bash
+```bash
 python nbody_bh_data.py
-"""
+```
 
 ### 2. Enter Parameters
 The script will prompt you for setup paths and constants. Press "Enter" to accept the optimized default values:
 
-"""text
+```text
 Enter data directory [default: .]: 
 Enter CSV output directory [default: .]:
 Enter Quest package name [default: com.kawashima.bhvisualizer]:
 Enter BH keyword type [default: 14]:
 Enter mass conversion factor [default: 127918.2]:
 Transfer to Quest via adb? (y/n) [default: y]:
-"""
+```
 
 ### 3. Automated Data Deployment
 Upon completion, the pipeline automatically writes and pushes the parsed "bh_history.csv" and "bh_events.csv" files directly to your Quest headset via ADB at:
