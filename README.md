@@ -4,7 +4,6 @@ A VR visualization tool for N-body astrophysical simulations (specifically focus
 
 ## 🎬 Demo Video
 
-https://github.com/user-attachments/assets/0f4fc610-3d7a-4cc5-8b77-d30dd83720cb
 
 ---
 
