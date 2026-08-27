@@ -73,11 +73,12 @@ public static class ScienceModeSetupEditor
     {
         RectTransform rect = panel.GetComponent<RectTransform>();
         if (rect == null) rect = Undo.AddComponent<RectTransform>(panel);
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(500f, 0f);
-        rect.sizeDelta = new Vector2(360f, 390f);
+        rect.anchorMin = new Vector2(0.5f, 1.0f);
+        rect.anchorMax = new Vector2(0.5f, 1.0f);
+        rect.pivot = new Vector2(0.5f, 0.0f);
+        rect.anchoredPosition = new Vector2(0f, 20f);
+        rect.sizeDelta = new Vector2(760f, 300f);
+        rect.SetAsLastSibling();
 
         Image background = panel.GetComponent<Image>();
         if (background == null) background = Undo.AddComponent<Image>(panel);
@@ -133,14 +134,14 @@ public static class ScienceModeSetupEditor
             : CreateUiObject("ScienceContentText", content.transform);
         TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
         if (text == null) text = Undo.AddComponent<TextMeshProUGUI>(textObject);
-        text.fontSize = 17f;
+        text.fontSize = 16f;
         text.color = Color.white;
         text.alignment = TextAlignmentOptions.TopLeft;
         text.enableWordWrapping = true;
         text.overflowMode = TextOverflowModes.Overflow;
         text.richText = true;
         text.raycastTarget = false;
-        text.text = "SCIENCE MODE";
+        text.text = "<b>SCIENCE MODE</b>";
 
         scroll.viewport = viewportRect;
         scroll.content = contentRect;
