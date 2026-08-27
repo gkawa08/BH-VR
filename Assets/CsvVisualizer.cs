@@ -129,7 +129,7 @@ public class CsvVisualizer : MonoBehaviour
 
     [Header("Science Mode Settings")]
     public bool startInScienceMode = false;
-    public string solarMassUnit = "M☉";
+    public string solarMassUnit = "M⊙";
     public string distanceUnit = "pc";
     public string velocityUnit = "km/s";
     public string timeUnit = "Myr";
@@ -146,6 +146,11 @@ public class CsvVisualizer : MonoBehaviour
     public bool playbackTimeIsNbody = true;
     [Min(0.0001f)]
     public float scienceEventTimeTolerance = 0.05f;
+
+    [Header("Science Panel Layout")]
+    public bool positionSciencePanelAboveUi = true;
+    public Vector2 sciencePanelTopOffset = new Vector2(0f, 20f);
+    public Vector2 sciencePanelSize = new Vector2(760f, 300f);
 
     [Header("UI Linking")]
     public Slider timeSlider;
@@ -201,8 +206,10 @@ public class CsvVisualizer : MonoBehaviour
     private bool isScienceMode = false;
     private bool isFollowMode = false;
     private bool followBinaryCenterOfMass = false;
+    private bool followPostExchangeBinary = false;
     private int followedBhId = -1;
-    private const int FollowBinarySentinel = int.MinValue;
+    private const int FollowPreBinarySentinel = int.MinValue;
+    private const int FollowPostBinarySentinel = int.MinValue + 1;
     private Vector3 followAnchorPosition = Vector3.zero;
     private readonly List<int> followDropdownIds = new List<int>();
     private readonly Dictionary<Transform, Vector3> followBackgroundOriginalPositions = new Dictionary<Transform, Vector3>();
@@ -673,6 +680,21 @@ public class CsvVisualizer : MonoBehaviour
         }
     }
 
+    void ApplySciencePanelLayout()
+    {
+        if (!positionSciencePanelAboveUi || scienceDataPanel == null) return;
+
+        RectTransform panelRect = scienceDataPanel.GetComponent<RectTransform>();
+        if (panelRect == null) return;
+
+        panelRect.anchorMin = new Vector2(0.5f, 1.0f);
+        panelRect.anchorMax = new Vector2(0.5f, 1.0f);
+        panelRect.pivot = new Vector2(0.5f, 0.0f);
+        panelRect.anchoredPosition = sciencePanelTopOffset;
+        panelRect.sizeDelta = sciencePanelSize;
+        panelRect.SetAsLastSibling();
+    }
+
     Transform FindChildRecursive(Transform parent, string childName)
     {
         foreach (Transform child in parent)
@@ -952,7 +974,7 @@ public class CsvVisualizer : MonoBehaviour
 
         if (currentSelectedEvent.ids.Length >= 2)
         {
-            string firstPairName = currentSelectedEvent.type == "EXCHANGE" ? "Before pair" : "Pair";
+            string firstPairName = currentSelectedEvent.type == "EXCHANGE" ? "PRE-event binary" : "Pair";
             UpdateSciencePairVisual(
                 0,
                 currentSelectedEvent.ids[0],
@@ -969,15 +991,22 @@ public class CsvVisualizer : MonoBehaviour
                 1,
                 currentSelectedEvent.ids[2],
                 currentSelectedEvent.ids[3],
-                "After pair",
+                "POST-event binary",
                 scienceAfterPairColor,
                 bodyById
             );
         }
 
         string scienceText = BuildScienceDataText(currentTime, bodyById);
-        if (scienceDataText != null) scienceDataText.text = scienceText;
-        if (scienceDataTmpText != null) scienceDataTmpText.text = scienceText;
+        if (scienceDataTmpText != null)
+        {
+            scienceDataTmpText.richText = true;
+            scienceDataTmpText.text = scienceText;
+        }
+        else if (scienceDataText != null)
+        {
+            scienceDataText.text = StripRichText(scienceText);
+        }
     }
 
     void UpdateSciencePairVisual(
@@ -1076,6 +1105,44 @@ public class CsvVisualizer : MonoBehaviour
         }
     }
 
+    string GetPlainSolarMassUnit()
+    {
+        if (string.IsNullOrWhiteSpace(solarMassUnit)) return "M⊙";
+        return solarMassUnit
+            .Replace("M<sub>⊙</sub>", "M⊙")
+            .Replace("M<sub>☉</sub>", "M⊙")
+            .Replace("M☉", "M⊙")
+            .Replace("M_odot", "M⊙");
+    }
+
+    string GetScienceSolarMassUnit()
+    {
+        return "M<sub>⊙</sub>";
+    }
+
+    string StripRichText(string richText)
+    {
+        if (string.IsNullOrEmpty(richText)) return richText;
+
+        System.Text.StringBuilder plain = new System.Text.StringBuilder(richText.Length);
+        bool insideTag = false;
+        foreach (char character in richText)
+        {
+            if (character == '<')
+            {
+                insideTag = true;
+                continue;
+            }
+            if (character == '>' && insideTag)
+            {
+                insideTag = false;
+                continue;
+            }
+            if (!insideTag) plain.Append(character);
+        }
+        return plain.ToString();
+    }
+
     double GetDisplayTimeMyr(double playbackTime)
     {
         if (!playbackTimeIsNbody) return playbackTime;
@@ -1129,7 +1196,7 @@ public class CsvVisualizer : MonoBehaviour
             if (bodyById.TryGetValue(id, out BodyData body))
             {
                 float speed = GetDisplayedVelocity(body, currentTime).magnitude;
-                lines.Add($"ID {id}: M = {body.mass:F2} {solarMassUnit}, |v| = {speed:F3} {velocityUnit}");
+                lines.Add($"ID {id}: <i>M</i> = {body.mass:F2} {GetScienceSolarMassUnit()}, |<i>v</i>| = {speed:F3} {velocityUnit}");
             }
             else
             {
@@ -1140,7 +1207,7 @@ public class CsvVisualizer : MonoBehaviour
         if (currentSelectedEvent.ids.Length >= 2)
         {
             lines.Add("");
-            string firstPairName = currentSelectedEvent.type == "EXCHANGE" ? "Before pair" : "Pair";
+            string firstPairName = currentSelectedEvent.type == "EXCHANGE" ? "PRE-event binary" : "Pair";
             AppendPairScienceData(
                 lines,
                 firstPairName,
@@ -1156,7 +1223,7 @@ public class CsvVisualizer : MonoBehaviour
             lines.Add("");
             AppendPairScienceData(
                 lines,
-                "After pair",
+                "POST-event binary",
                 currentSelectedEvent.ids[2],
                 currentSelectedEvent.ids[3],
                 currentTime,
@@ -1177,27 +1244,20 @@ public class CsvVisualizer : MonoBehaviour
             currentTime,
             playbackTimeIsNbody
         );
-        bool isBefore = playbackTimeIsNbody
-            ? currentTime < exchange.EventTimeNbody
-            : currentTime < exchange.EventTimeMyr;
         string viewFrame = isFollowMode
-            ? (followBinaryCenterOfMass ? "Follow binary CoM" : $"Follow BH {followedBhId}")
+            ? (followBinaryCenterOfMass
+                ? (followPostExchangeBinary ? "Follow POST-event binary CoM" : "Follow PRE-event binary CoM")
+                : $"Follow BH {followedBhId}")
             : (useCenterOfMass ? "Cluster CoM" : "Raw");
+        string solarMass = GetScienceSolarMassUnit();
 
         lines.Add($"<b><color=#67D5FF>SCIENCE MODE — EXCHANGE #{exchange.ExchangeIndex}</color></b>");
-        lines.Add($"Event: t = {exchange.EventTimeMyr:F3} Myr");
-        if (cluster != null)
-        {
-            lines.Add($"Time: {cluster.TimeMyr:F3} Myr");
-        }
-        else
-        {
-            lines.Add($"Time: {GetDisplayTimeMyr(currentTime):F3} Myr");
-        }
+        lines.Add($"Event: <i>t</i> = {exchange.EventTimeMyr:F3} Myr");
+        lines.Add($"Current playback: <i>t</i> = {GetDisplayTimeMyr(currentTime):F3} Myr");
         lines.Add($"View frame: {viewFrame}; reported speeds: cluster CoM");
         lines.Add("");
 
-        lines.Add($"<b><color=#FFF176>LIVE SNAPSHOT — {(isBefore ? "PRE" : "POST")}</color></b>");
+        lines.Add("<b><color=#FFF176>CURRENT PLAYBACK</color></b>");
         if (cluster == null)
         {
             lines.Add("Cluster science data unavailable");
@@ -1208,44 +1268,47 @@ public class CsvVisualizer : MonoBehaviour
         }
         else
         {
-            lines.Add($"σ1D = {FormatNumber(cluster.Sigma1dKms, "F3")} {velocityUnit}; vrms,3D = {FormatNumber(cluster.Vrms3dKms, "F3")} {velocityUnit}");
-            lines.Add($"Cluster VCoM = ({cluster.CenterVelocityKms.x:F3}, {cluster.CenterVelocityKms.y:F3}, {cluster.CenterVelocityKms.z:F3}) {velocityUnit}");
-            AppendLiveExchangeKinematics(lines, bodyById, cluster, exchange, isBefore);
+            lines.Add($"σ<sub>1D</sub> = {FormatNumber(cluster.Sigma1dKms, "F3")} {velocityUnit}; <i>v</i><sub>rms,3D</sub> = {FormatNumber(cluster.Vrms3dKms, "F3")} {velocityUnit}");
+            lines.Add($"Cluster <b>V</b><sub>CoM</sub> = ({cluster.CenterVelocityKms.x:F3}, {cluster.CenterVelocityKms.y:F3}, {cluster.CenterVelocityKms.z:F3}) {velocityUnit}");
+            AppendCurrentExchangeKinematics(lines, bodyById, cluster, exchange);
         }
         lines.Add("");
 
-        lines.Add("<b><color=#FF8CE8>EVENT MEASUREMENTS — FIXED</color></b>");
-        lines.Add($"Before: ID {exchange.BeforeId1} + {exchange.BeforeId2}; incoming ID {exchange.IncomingId}");
-        lines.Add($"  masses: {FormatNumber(exchange.BeforeMass1, "F2")} + {FormatNumber(exchange.BeforeMass2, "F2")}; incoming {FormatNumber(exchange.IncomingMass, "F2")} {solarMassUnit}");
-        lines.Add($"  snapshot @ {FormatNumber(exchange.BeforeSnapshotTimeMyr, "F3")} Myr; σ1D = {FormatNumber(exchange.SigmaBefore, "F3")} {velocityUnit}");
-        lines.Add($"  binary: vcl = {FormatNumber(exchange.BinarySpeedBefore, "F3")}, vesc = {FormatNumber(exchange.BinaryEscapeBefore, "F3")} {velocityUnit}");
-        lines.Add($"  incoming: vcl = {FormatNumber(exchange.SingleSpeedBefore, "F3")}, vesc = {FormatNumber(exchange.SingleEscapeBefore, "F3")} {velocityUnit}");
-        lines.Add($"After: ID {exchange.AfterId1} + {exchange.AfterId2}; outgoing ID {exchange.OutgoingId}");
-        lines.Add($"  masses: {FormatNumber(exchange.AfterMass1, "F2")} + {FormatNumber(exchange.AfterMass2, "F2")}; outgoing {FormatNumber(exchange.OutgoingMass, "F2")} {solarMassUnit}");
-        lines.Add($"  snapshot @ {FormatNumber(exchange.AfterSnapshotTimeMyr, "F3")} Myr; σ1D = {FormatNumber(exchange.SigmaAfter, "F3")} {velocityUnit}");
-        lines.Add($"  binary: vcl = {FormatNumber(exchange.BinarySpeedAfter, "F3")}, vesc = {FormatNumber(exchange.BinaryEscapeAfter, "F3")}, v/σ = {FormatNumber(exchange.BinarySigmaRatioAfter, "F2")}, v/vesc = {FormatEscapeRatio(exchange.BinaryEscapeRatioAfter)}");
-        lines.Add($"  outgoing: vcl = {FormatNumber(exchange.SingleSpeedAfter, "F3")}, vesc = {FormatNumber(exchange.SingleEscapeAfter, "F3")}, v/σ = {FormatNumber(exchange.SingleSigmaRatioAfter, "F2")}, v/vesc = {FormatEscapeRatio(exchange.SingleEscapeRatioAfter)}");
+        lines.Add("<b><color=#FF8CE8>PRE-EVENT SNAPSHOT — FIXED</color></b>");
+        lines.Add($"Binary: ID {exchange.BeforeId1} + {exchange.BeforeId2}; incoming ID {exchange.IncomingId}");
+        lines.Add($"Masses: {FormatNumber(exchange.BeforeMass1, "F2")} + {FormatNumber(exchange.BeforeMass2, "F2")}; incoming {FormatNumber(exchange.IncomingMass, "F2")} {solarMass}");
+        lines.Add($"Snapshot: <i>t</i> = {FormatNumber(exchange.BeforeSnapshotTimeMyr, "F3")} Myr; σ<sub>1D</sub> = {FormatNumber(exchange.SigmaBefore, "F3")} {velocityUnit}");
+        lines.Add($"Binary: <i>v</i><sub>cl</sub> = {FormatNumber(exchange.BinarySpeedBefore, "F3")}, <i>v</i><sub>esc</sub> = {FormatNumber(exchange.BinaryEscapeBefore, "F3")} {velocityUnit}, <i>v</i>/σ = {FormatNumber(SafeRatio(exchange.BinarySpeedBefore, exchange.SigmaBefore), "F2")}, <i>v</i>/<i>v</i><sub>esc</sub> = {FormatEscapeRatio(SafeRatio(exchange.BinarySpeedBefore, exchange.BinaryEscapeBefore))}");
+        lines.Add($"Incoming: <i>v</i><sub>cl</sub> = {FormatNumber(exchange.SingleSpeedBefore, "F3")}, <i>v</i><sub>esc</sub> = {FormatNumber(exchange.SingleEscapeBefore, "F3")} {velocityUnit}, <i>v</i>/σ = {FormatNumber(SafeRatio(exchange.SingleSpeedBefore, exchange.SigmaBefore), "F2")}, <i>v</i>/<i>v</i><sub>esc</sub> = {FormatEscapeRatio(SafeRatio(exchange.SingleSpeedBefore, exchange.SingleEscapeBefore))}");
         lines.Add("");
 
-        lines.Add("<b>Binary orbit and binding energy</b>");
-        lines.Add($"a: {FormatNumber(exchange.SemimajorAxisBeforeAu, "F3")} → {FormatNumber(exchange.SemimajorAxisAfterAu, "F3")} AU");
-        lines.Add($"e: {FormatNumber(exchange.EccentricityBefore, "F3")} → {FormatNumber(exchange.EccentricityAfter, "F3")}");
-        lines.Add($"|Eb|: {FormatScientific(exchange.BindingEnergyBefore)} → {FormatScientific(exchange.BindingEnergyAfter)} M☉ (km/s)²");
-        lines.Add($"ΔEb = {FormatSignedScientific(exchange.BindingEnergyRelease)} M☉ (km/s)²");
+        lines.Add("<b><color=#72E5E5>POST-EVENT SNAPSHOT — FIXED</color></b>");
+        lines.Add($"Binary: ID {exchange.AfterId1} + {exchange.AfterId2}; outgoing ID {exchange.OutgoingId}");
+        lines.Add($"Masses: {FormatNumber(exchange.AfterMass1, "F2")} + {FormatNumber(exchange.AfterMass2, "F2")}; outgoing {FormatNumber(exchange.OutgoingMass, "F2")} {solarMass}");
+        lines.Add($"Snapshot: <i>t</i> = {FormatNumber(exchange.AfterSnapshotTimeMyr, "F3")} Myr; σ<sub>1D</sub> = {FormatNumber(exchange.SigmaAfter, "F3")} {velocityUnit}");
+        lines.Add($"Binary: <i>v</i><sub>cl</sub> = {FormatNumber(exchange.BinarySpeedAfter, "F3")}, <i>v</i><sub>esc</sub> = {FormatNumber(exchange.BinaryEscapeAfter, "F3")} {velocityUnit}, <i>v</i>/σ = {FormatNumber(exchange.BinarySigmaRatioAfter, "F2")}, <i>v</i>/<i>v</i><sub>esc</sub> = {FormatEscapeRatio(exchange.BinaryEscapeRatioAfter)}");
+        lines.Add($"Outgoing: <i>v</i><sub>cl</sub> = {FormatNumber(exchange.SingleSpeedAfter, "F3")}, <i>v</i><sub>esc</sub> = {FormatNumber(exchange.SingleEscapeAfter, "F3")} {velocityUnit}, <i>v</i>/σ = {FormatNumber(exchange.SingleSigmaRatioAfter, "F2")}, <i>v</i>/<i>v</i><sub>esc</sub> = {FormatEscapeRatio(exchange.SingleEscapeRatioAfter)}");
+        lines.Add("");
+
+        lines.Add("<b>EVENT COMPARISON</b>");
+        lines.Add($"Semimajor axis <i>a</i>: {FormatNumber(exchange.SemimajorAxisBeforeAu, "F3")} → {FormatNumber(exchange.SemimajorAxisAfterAu, "F3")} AU");
+        lines.Add($"Eccentricity <i>e</i>: {FormatNumber(exchange.EccentricityBefore, "F3")} → {FormatNumber(exchange.EccentricityAfter, "F3")}");
+        lines.Add($"|<i>E</i><sub>b</sub>|: {FormatScientific(exchange.BindingEnergyBefore)} → {FormatScientific(exchange.BindingEnergyAfter)} {solarMass} (km/s)<sup>2</sup>");
+        lines.Add($"Δ<i>E</i><sub>b</sub> = {FormatSignedScientific(exchange.BindingEnergyRelease)} {solarMass} (km/s)<sup>2</sup>");
 
         if (exchange.BindingEnergyReleasePositive &&
             exchange.PredictedBinaryRecoil.HasValue &&
             exchange.PredictedOutgoingRecoil.HasValue)
         {
             lines.Add("<b>Simple recoil model — final triple CoM</b>");
-            lines.Add($"  predicted binary / outgoing = {exchange.PredictedBinaryRecoil.Value:F3} / {exchange.PredictedOutgoingRecoil.Value:F3} {velocityUnit}");
-            lines.Add($"  measured binary / outgoing = {FormatNumber(exchange.MeasuredBinaryRecoil, "F3")} / {FormatNumber(exchange.MeasuredOutgoingRecoil, "F3")} {velocityUnit}");
-            lines.Add($"  measured/predicted = {FormatNumber(exchange.MeasuredPredictedBinaryRatio, "F2")} / {FormatNumber(exchange.MeasuredPredictedOutgoingRatio, "F2")}");
-            lines.Add($"  ΔK(measured) / ΔEb = {FormatNumber(exchange.KineticBindingRatio, "F3")}");
+            lines.Add($"Predicted binary / outgoing = {exchange.PredictedBinaryRecoil.Value:F3} / {exchange.PredictedOutgoingRecoil.Value:F3} {velocityUnit}");
+            lines.Add($"Measured binary / outgoing = {FormatNumber(exchange.MeasuredBinaryRecoil, "F3")} / {FormatNumber(exchange.MeasuredOutgoingRecoil, "F3")} {velocityUnit}");
+            lines.Add($"Measured/predicted = {FormatNumber(exchange.MeasuredPredictedBinaryRatio, "F2")} / {FormatNumber(exchange.MeasuredPredictedOutgoingRatio, "F2")}");
+            lines.Add($"Δ<i>K</i><sub>measured</sub> / Δ<i>E</i><sub>b</sub> = {FormatNumber(exchange.KineticBindingRatio, "F3")}");
         }
         else
         {
-            lines.Add("<color=#FFB86C>Simple recoil model: N/A because ΔEb ≤ 0</color>");
+            lines.Add("<color=#FFB86C>Simple recoil model: N/A because Δ<i>E</i><sub>b</sub> ≤ 0</color>");
         }
 
         if (exchange.ChainBinaryVelocity.HasValue || exchange.ChainEscapeVelocity.HasValue)
@@ -1253,58 +1316,52 @@ public class CsvVisualizer : MonoBehaviour
             lines.Add("<b>NBODY6 chain log</b>");
             if (exchange.ChainBinaryVelocity.HasValue)
             {
-                lines.Add($"  CHAIN BINARY VCM = {exchange.ChainBinaryVelocity.Value:F3} {velocityUnit}");
+                lines.Add($"CHAIN BINARY V<sub>CM</sub> = {exchange.ChainBinaryVelocity.Value:F3} {velocityUnit}");
             }
             if (exchange.ChainEscapeVelocity.HasValue)
             {
-                lines.Add($"  CHAIN ESCAPE VF = {exchange.ChainEscapeVelocity.Value:F3} {velocityUnit} (chain frame/epoch)");
+                lines.Add($"CHAIN ESCAPE V<sub>F</sub> = {exchange.ChainEscapeVelocity.Value:F3} {velocityUnit} (chain frame/epoch)");
             }
         }
 
         lines.Add("<b>Prompt cluster escape ≤ 22.7 Myr</b>");
-        lines.Add($"  binary: {FormatEscapeStatus(exchange.BinaryPromptEscape, exchange.BinaryEscapeLagMyr)}");
-        lines.Add($"  outgoing: {FormatEscapeStatus(exchange.OutgoingPromptEscape, exchange.OutgoingEscapeLagMyr)}");
+        lines.Add($"Binary: {FormatEscapeStatus(exchange.BinaryPromptEscape, exchange.BinaryEscapeLagMyr)}");
+        lines.Add($"Outgoing: {FormatEscapeStatus(exchange.OutgoingPromptEscape, exchange.OutgoingEscapeLagMyr)}");
         lines.Add("");
-        lines.Add("<size=80%>HDF5 before/after snapshots; local vesc is a spherical tidal-radius-truncated estimate. Event quantities are not interpolated.</size>");
+        lines.Add("<size=80%>HDF5 before/after snapshots; local <i>v</i><sub>esc</sub> is a spherical tidal-radius-truncated estimate. Event quantities are not interpolated.</size>");
 
         return string.Join("\n", lines);
     }
 
-    void AppendLiveExchangeKinematics(
+    void AppendCurrentExchangeKinematics(
         List<string> lines,
         Dictionary<int, BodyData> bodyById,
         ClusterScienceRecord cluster,
-        ScienceExchangeRecord exchange,
-        bool isBefore)
+        ScienceExchangeRecord exchange)
     {
-        int binaryId1 = isBefore ? exchange.BeforeId1 : exchange.AfterId1;
-        int binaryId2 = isBefore ? exchange.BeforeId2 : exchange.AfterId2;
-        int singleId = isBefore ? exchange.IncomingId : exchange.OutgoingId;
-        string singleName = isBefore ? "incoming" : "outgoing";
+        int[] participantIds =
+        {
+            exchange.BeforeId1,
+            exchange.BeforeId2,
+            exchange.IncomingId,
+            exchange.AfterId1,
+            exchange.AfterId2,
+            exchange.OutgoingId
+        };
 
-        if (TryGetBinaryClusterSpeed(bodyById, binaryId1, binaryId2, cluster.CenterVelocityKms, out float binarySpeed))
+        foreach (int id in participantIds.Distinct())
         {
-            string ratio = cluster.Sigma1dKms.HasValue && cluster.Sigma1dKms.Value > 0.0
-                ? (binarySpeed / cluster.Sigma1dKms.Value).ToString("F2", CultureInfo.InvariantCulture)
-                : "—";
-            lines.Add($"Binary {binaryId1}+{binaryId2}: vcl = {binarySpeed:F3} {velocityUnit}, v/σ = {ratio}");
-        }
-        else
-        {
-            lines.Add($"Binary {binaryId1}+{binaryId2}: unavailable in this frame");
-        }
+            if (!bodyById.TryGetValue(id, out BodyData body))
+            {
+                lines.Add($"ID {id}: not present in the current frame");
+                continue;
+            }
 
-        if (bodyById.TryGetValue(singleId, out BodyData single))
-        {
-            float singleSpeed = (single.velocity - cluster.CenterVelocityKms).magnitude;
+            float speed = (body.velocity - cluster.CenterVelocityKms).magnitude;
             string ratio = cluster.Sigma1dKms.HasValue && cluster.Sigma1dKms.Value > 0.0
-                ? (singleSpeed / cluster.Sigma1dKms.Value).ToString("F2", CultureInfo.InvariantCulture)
+                ? (speed / cluster.Sigma1dKms.Value).ToString("F2", CultureInfo.InvariantCulture)
                 : "—";
-            lines.Add($"{singleName} {singleId}: vcl = {singleSpeed:F3} {velocityUnit}, v/σ = {ratio}");
-        }
-        else
-        {
-            lines.Add($"{singleName} {singleId}: unavailable in this frame");
+            lines.Add($"ID {id}: |<i>v</i><sub>cl</sub>| = {speed:F3} {velocityUnit}, <i>v</i>/σ = {ratio}");
         }
     }
 
@@ -1328,6 +1385,12 @@ public class CsvVisualizer : MonoBehaviour
     string FormatNumber(double? value, string format)
     {
         return value.HasValue ? value.Value.ToString(format, CultureInfo.InvariantCulture) : "—";
+    }
+
+    double? SafeRatio(double? numerator, double? denominator)
+    {
+        if (!numerator.HasValue || !denominator.HasValue || denominator.Value <= 0.0) return null;
+        return numerator.Value / denominator.Value;
     }
 
     string FormatScientific(double? value)
@@ -1384,10 +1447,10 @@ public class CsvVisualizer : MonoBehaviour
             : 0f;
         string radialState = radialVelocity < 0f ? "approaching" : radialVelocity > 0f ? "receding" : "stationary";
 
-        lines.Add($"Mtot = {totalMass:F2} {solarMassUnit}, q = {massRatio:F3}");
-        lines.Add($"r = {separation:F3} {distanceUnit}");
-        lines.Add($"vrel = {relativeSpeed:F3} {velocityUnit}");
-        lines.Add($"vr = {radialVelocity:+0.000;-0.000;0.000} {velocityUnit} ({radialState})");
+        lines.Add($"<i>M</i><sub>tot</sub> = {totalMass:F2} {GetScienceSolarMassUnit()}, <i>q</i> = {massRatio:F3}");
+        lines.Add($"<i>r</i> = {separation:F3} {distanceUnit}");
+        lines.Add($"<i>v</i><sub>rel</sub> = {relativeSpeed:F3} {velocityUnit}");
+        lines.Add($"<i>v</i><sub>r</sub> = {radialVelocity:+0.000;-0.000;0.000} {velocityUnit} ({radialState})");
     }
 
     Vector3 GetDisplayedVelocity(BodyData body, float currentTime)
@@ -1420,9 +1483,9 @@ public class CsvVisualizer : MonoBehaviour
         if (currentSelectedEvent == null || currentSelectedEvent.ids == null || currentSelectedEvent.ids.Length < 2) return false;
         if (!timeDataMap.TryGetValue(time, out List<BodyData> frameData)) return false;
 
-        bool useAfterPair = currentSelectedEvent.type == "EXCHANGE"
-            && currentSelectedEvent.ids.Length >= 4
-            && time >= currentSelectedEvent.time;
+        bool useAfterPair = followPostExchangeBinary
+            && currentSelectedEvent.type == "EXCHANGE"
+            && currentSelectedEvent.ids.Length >= 4;
         int id1 = useAfterPair ? currentSelectedEvent.ids[2] : currentSelectedEvent.ids[0];
         int id2 = useAfterPair ? currentSelectedEvent.ids[3] : currentSelectedEvent.ids[1];
         BodyData body1 = frameData.FirstOrDefault(body => body.id == id1);
@@ -1434,7 +1497,7 @@ public class CsvVisualizer : MonoBehaviour
         center = new BodyData
         {
             time = time,
-            id = FollowBinarySentinel,
+            id = followPostExchangeBinary ? FollowPostBinarySentinel : FollowPreBinarySentinel,
             mass = totalMass,
             position = (body1.position * body1.mass + body2.position * body2.mass) / totalMass,
             velocity = (body1.velocity * body1.mass + body2.velocity * body2.mass) / totalMass
@@ -1711,6 +1774,7 @@ public class CsvVisualizer : MonoBehaviour
     void SetupUI()
     {
         ResolveScienceUIReferences();
+        ApplySciencePanelLayout();
 
         if (timeSlider != null && sortedTimeKeys.Count > 0)
         {
@@ -1793,7 +1857,7 @@ public class CsvVisualizer : MonoBehaviour
 
                     if (bestMass > 0f)
                     {
-                        idMassStrings.Add($"{id}({bestMass:F1} {solarMassUnit})"); 
+                        idMassStrings.Add($"{id}({bestMass:F1} {GetPlainSolarMassUnit()})"); 
                     }
                     else
                     {
@@ -1911,7 +1975,9 @@ public class CsvVisualizer : MonoBehaviour
         if (togglePosModeButton != null)
         {
             string label = isFollowMode
-                ? (followBinaryCenterOfMass ? "Pos: Follow Binary CoM" : $"Pos: Follow BH {followedBhId}")
+                ? (followBinaryCenterOfMass
+                    ? (followPostExchangeBinary ? "Pos: Follow POST binary CoM" : "Pos: Follow PRE binary CoM")
+                    : $"Pos: Follow BH {followedBhId}")
                 : (useCenterOfMass ? "Pos: CoM" : "Pos: Raw");
 
             Text btnText = togglePosModeButton.GetComponentInChildren<Text>(true);
@@ -1975,7 +2041,9 @@ public class CsvVisualizer : MonoBehaviour
         ResolveFollowModeButtonText();
 
         string label = isFollowMode
-            ? (followBinaryCenterOfMass ? "Exit Binary Follow" : "Exit Follow")
+            ? (followBinaryCenterOfMass
+                ? (followPostExchangeBinary ? "Exit POST-binary Follow" : "Exit PRE-binary Follow")
+                : "Exit Follow")
             : "Follow Mode";
         if (followModeButtonText != null) followModeButtonText.text = label;
         if (followModeButtonTmpText != null) followModeButtonTmpText.text = label;
@@ -2010,7 +2078,9 @@ public class CsvVisualizer : MonoBehaviour
         if (idIndex < 0 || idIndex >= followDropdownIds.Count) return;
 
         int selectedId = followDropdownIds[idIndex];
-        bool selectedBinary = selectedId == FollowBinarySentinel;
+        bool selectedBinary = selectedId == FollowPreBinarySentinel
+            || selectedId == FollowPostBinarySentinel;
+        followPostExchangeBinary = selectedId == FollowPostBinarySentinel;
         BodyData selectedBody = null;
         if (selectedBinary)
         {
@@ -2040,6 +2110,7 @@ public class CsvVisualizer : MonoBehaviour
         RestoreFollowBackgrounds();
         isFollowMode = false;
         followBinaryCenterOfMass = false;
+        followPostExchangeBinary = false;
         followedBhId = -1;
 
         if (followBhDropdown != null)
@@ -2095,13 +2166,19 @@ public class CsvVisualizer : MonoBehaviour
         List<string> options = new List<string> { "Select target..." };
         if (currentSelectedEvent != null && currentSelectedEvent.ids.Length >= 2)
         {
-            followDropdownIds.Add(FollowBinarySentinel);
+            followDropdownIds.Add(FollowPreBinarySentinel);
             options.Add(currentSelectedEvent.type == "EXCHANGE"
-                ? "Binary CoM (auto-switch at EXCHANGE)"
+                ? "PRE-event binary CoM"
                 : "Binary CoM");
+
+            if (currentSelectedEvent.type == "EXCHANGE" && currentSelectedEvent.ids.Length >= 4)
+            {
+                followDropdownIds.Add(FollowPostBinarySentinel);
+                options.Add("POST-event binary CoM");
+            }
         }
         followDropdownIds.AddRange(candidates.Select(body => body.id));
-        options.AddRange(candidates.Select(body => $"BH {body.id} ({body.mass:F1} {solarMassUnit})"));
+        options.AddRange(candidates.Select(body => $"BH {body.id} ({body.mass:F1} {GetPlainSolarMassUnit()})"));
 
         followBhDropdown.ClearOptions();
         followBhDropdown.AddOptions(options);
@@ -2109,7 +2186,9 @@ public class CsvVisualizer : MonoBehaviour
         int selectedIndex = 0;
         if (isFollowMode)
         {
-            int selectedId = followBinaryCenterOfMass ? FollowBinarySentinel : followedBhId;
+            int selectedId = followBinaryCenterOfMass
+                ? (followPostExchangeBinary ? FollowPostBinarySentinel : FollowPreBinarySentinel)
+                : followedBhId;
             int targetIndex = followDropdownIds.IndexOf(selectedId);
             if (targetIndex >= 0) selectedIndex = targetIndex + 1;
         }
@@ -2718,11 +2797,11 @@ public class CsvVisualizer : MonoBehaviour
                     if (isScienceMode)
                     {
                         float speed = GetDisplayedVelocity(data, currentTime).magnitude;
-                        tm.text = $"ID {data.id}\n{data.mass:F1} {solarMassUnit}\n|v| = {speed:F2} {velocityUnit}";
+                        tm.text = $"ID {data.id}\n{data.mass:F1} {GetPlainSolarMassUnit()}\n|v| = {speed:F2} {velocityUnit}";
                     }
                     else
                     {
-                        tm.text = $"{data.mass:F1} {solarMassUnit}";
+                        tm.text = $"{data.mass:F1} {GetPlainSolarMassUnit()}";
                     }
 
                     tm.characterSize = labelCharacterSize;
