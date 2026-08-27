@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class VRExtraControls : MonoBehaviour
 {
     public GameObject uiCanvas;
+    public GameObject tutorialCanvas;
     public float verticalSpeed = 3.0f;
 
     public InputAction toggleUIAction;
@@ -35,9 +36,10 @@ public class VRExtraControls : MonoBehaviour
 
     void Update()
     {
-        // ★ここが新仕様！★
-        // UIが表示されている間は、右スティックの上下移動をキャンセルして誤爆を防ぐ
-        if (uiCanvas != null && uiCanvas.activeSelf)
+        bool isUiOpen = uiCanvas != null && uiCanvas.activeSelf;
+        bool isTutorialOpen = tutorialCanvas != null && tutorialCanvas.activeSelf;
+
+        if (isUiOpen || isTutorialOpen)
         {
             return;
         }
