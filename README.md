@@ -1,214 +1,79 @@
 # NBody-VR Visualizer
 
-NBody-VR Visualizer is a standalone VR application for exploring black-hole dynamics in NBODY6 simulations on Meta Quest 2 and Meta Quest 3. It displays black-hole trajectories, highlights `EXCHANGE` and `MERGE` events, and provides a Science Mode for inspecting the dynamics and energetics of binary-single interactions.
+NBody-VR Visualizer is a standalone Meta Quest application for exploring black-hole dynamics from NBODY6 simulations in an interactive 3D environment.
 
-## Key features
+It displays black-hole trajectories, masses, velocities, binaries, exchanges, mergers, and escapes along a simulation timeline. A bundled example dataset is included for immediate use, while your own NBODY6 output can be converted with one Python script and transferred to the headset.
 
-- Interactive 3D playback of black-hole positions and velocities
-- Event selection for `EXCHANGE` and `MERGE` events
-- Raw, cluster center-of-mass, followed-BH, and binary center-of-mass views
-- Optional velocity arrows and participant labels
-- Science Mode with fixed pre-event/post-event comparison
-- Standalone playback on a Quest headset without a continuous PC connection
-- A single Python pipeline that converts NBODY6 HDF5 and text output into lightweight CSV files
-- Direct CSV transfer to the headset through ADB or SideQuest
+## Basic VR use
 
-## Science Mode
+The main controls are:
 
-Select an event from the event list and turn **Science: ON**. The Science panel appears above the main UI. For an `EXCHANGE` event, the panel separates live playback information from fixed measurements made on the resolved HDF5 snapshots immediately before and after the encounter.
+| Control | Function |
+|---|---|
+| **Play / Pause** | Start or stop time evolution. |
+| **Time slider** | Move directly to another simulation time. |
+| **Event list** | Jump to a detected exchange, merger, or escape event. |
+| **BH size** | Change the visual scale of black holes. This does not change their physical masses. |
+| **Speed** | Change playback speed. |
+| **Velocity arrows** | Show or hide velocity vectors. |
+| **Position / Follow** | Select the display frame or follow a black hole or binary centre of mass. |
+| **Science** | Show the scientific information panel above the main controls. |
+| **Help** | Show the in-app control guide. |
 
-The fixed comparison can be represented as
+Point at a UI element with the controller ray and press the trigger to operate it.
 
-$$
-(A+B)+C \longrightarrow (A+C)+B,
-$$
+## Quick Play
 
-where $A+B$ is the pre-event binary, $C$ is the incoming object, $A+C$ is the post-event binary, and $B$ is the outgoing object.
+Quick Play uses the example dataset bundled with the APK. No Python conversion or manual data transfer is required.
 
-### Event header
+### Requirements
 
-The top of the panel shows:
+- Meta Quest 2 or Quest 3
+- A USB cable
+- [SideQuest](https://sidequestvr.com/) or Android Debug Bridge (`adb`)
 
-```text
-SCIENCE MODE — EXCHANGE #...
-Event: t = ... Myr
-Current playback: t = ... Myr
-View frame: ...; reported speeds: cluster CoM
-```
+### Install and launch
 
-- **Event** is the event time parsed from the NBODY6 text output.
-- **Current playback** is the time of the currently displayed trajectory frame.
-- **View frame** describes the spatial/visual frame selected in VR.
-- Quantities marked $v_{\rm cl}$ are always reported relative to the cluster center-of-mass velocity, independently of the selected visual frame.
+1. Download the latest APK from [GitHub Releases](https://github.com/gkawa08/nbody-vr-visualizer-unity/releases).
+2. Install it with SideQuest, or run:
 
-The event time does not normally coincide with an HDF5 snapshot. Science Mode therefore displays the event time and the two measured snapshot times separately.
+   ```bash
+   adb install NBodyVis_VR.apk
+   ```
 
-### Current playback
+3. On the headset, open **App Library → Unknown Sources** and launch NBody-VR Visualizer.
+4. Press **Play**, move the time slider, or select an item from the event list.
 
-`CURRENT PLAYBACK` follows the displayed trajectory time. It reports the nearest available cluster-dynamics record and the current participant kinematics.
+The bundled sample contains the trajectory and event files required by both the standard display and Science Mode.
 
-The cluster center-of-mass velocity is mass weighted:
+> If custom CSV files already exist on the headset, they take priority over the bundled sample. Remove those files from the app's data directory to return to Quick Play mode.
 
-$$
-\mathbf{V}_{\rm cl}=\frac{\sum_i m_i\mathbf{v}_i}{\sum_i m_i}.
-$$
+## Use your own NBODY6 data
 
-The displayed three-dimensional RMS speed and one-dimensional dispersion are
-
-$$
-v_{\rm rms,3D}=\sqrt{\frac{1}{N}\sum_i
-\left|\mathbf{v}_i-\mathbf{V}_{\rm cl}\right|^2},
-\qquad
-\sigma_{\rm 1D}=\frac{v_{\rm rms,3D}}{\sqrt{3}}.
-$$
-
-The sum is evaluated over valid physical particles inside the tidal-radius selection. Particle velocities are number weighted after subtracting the mass-weighted cluster center-of-mass velocity.
-
-For a binary with component masses $m_1$ and $m_2$,
-
-$$
-\mathbf{V}_{\rm bin}=\frac{m_1\mathbf{v}_1+m_2\mathbf{v}_2}{m_1+m_2},
-\qquad
-v_{\rm cl,bin}=\left|\mathbf{V}_{\rm bin}-\mathbf{V}_{\rm cl}\right|.
-$$
-
-Participant labels show the BH ID, mass, cluster-frame speed, and $v/\sigma$. Masses use M<sub>⊙</sub> when the active TextMeshPro font contains the solar-symbol glyph; otherwise the panel falls back to M<sub>sun</sub>. World-space labels use `M☉`.
-
-### Fixed pre-event and post-event snapshots
-
-The magenta `PRE-EVENT SNAPSHOT — FIXED` and cyan `POST-EVENT SNAPSHOT — FIXED` sections do not switch as playback crosses the event time. They remain visible together so that the exchange can be compared directly.
-
-Each section reports:
-
-- Binary component IDs and incoming/outgoing ID
-- Component masses
-- HDF5 snapshot time
-- Cluster one-dimensional velocity dispersion
-- Binary center-of-mass speed relative to the cluster
-- Incoming or outgoing single-object speed relative to the cluster
-- $v/\sigma$
-- $v/v_{\rm esc}$
-
-The local escape speed is a spherical approximation evaluated from the cluster particles:
-
-$$
-v_{\rm esc}(r)=
-\sqrt{2G\sum_i\frac{m_i}{\max(r,r_i)}}.
-$$
-
-The target binary or single object is excluded from the potential sum. This is a tidal-radius-truncated, spherically averaged estimate; it is not a full Jacobi-energy escape criterion in an external Galactic tidal field. A red $v/v_{\rm esc}>1$ indicates that the instantaneous speed exceeds this estimate, not that permanent escape has already been demonstrated.
-
-### Event comparison
-
-`EVENT COMPARISON` displays the NBODY6 orbital diagnostics and derived binary binding energies:
-
-$$
-|E_b|=\frac{Gm_1m_2}{2a},
-\qquad
-\Delta E_b=|E_{b,\rm after}|-|E_{b,\rm before}|.
-$$
-
-- $a$: binary semimajor axis in AU
-- $e$: orbital eccentricity
-- $|E_b|$: magnitude of the binary binding energy
-- $\Delta E_b>0$: the binary hardened and released binding energy
-- $\Delta E_b\leq0$: the simple recoil prediction is not evaluated
-
-### Simple recoil model
-
-When $\Delta E_b>0$, Science Mode compares the measured recoil with an idealized three-body energy-partition model. For final binary mass $M_b$, outgoing mass $m_3$, and $M_{123}=M_b+m_3$,
-
-$$
-v_{b,\rm pred}=\sqrt{\frac{2\Delta E_bm_3}{M_bM_{123}}},
-\qquad
-v_{3,\rm pred}=\sqrt{\frac{2\Delta E_bM_b}{m_3M_{123}}}.
-$$
-
-The panel reports predicted and measured velocities in the final three-body center-of-mass frame, their ratios, and
-
-$$
-\frac{\Delta K_{\rm measured}}{\Delta E_b}.
-$$
-
-This model assumes that the released binding energy is converted into translational recoil of the final binary and outgoing single. It neglects the incoming kinetic energy, the cluster potential during the encounter, unresolved intermediate multiples, and the finite snapshot interval. Agreement with unity is therefore not required.
-
-### NBODY6 chain diagnostics and prompt escape
-
-When present in the NBODY6 text output, the panel also displays:
-
-- `CHAIN BINARY VCM`
-- `CHAIN ESCAPE VF`
-
-These are direct log values and can refer to a different chain frame or epoch from the HDF5 measurements.
-
-`Prompt cluster escape` links a later `BH ESCAPE` record to the selected exchange when it occurs within 100 N-body time units. For the dataset currently supplied with this project, this corresponds to 22.7 Myr. `Not linked` means that no escape record met this prompt criterion; it does not prove that the object never escaped later.
-
-### Pair markers in the 3D view
-
-Science Mode can draw both binaries simultaneously:
-
-- Magenta: pre-event binary
-- Cyan: post-event binary
-
-The displayed component separation is the separation in the visualization snapshot. It is not the orbital semimajor axis $a$. During NBODY6 regularization, binary components may be represented at a common center-of-mass coordinate, so zero displayed separation does not imply physical contact.
-
-### KS/CHAIN composite representation
-
-The pipeline reads physical HDF5 particles from the `0:N` slice and excludes internal pseudo-particles stored beyond `N`. During a regularized encounter, NBODY6 may temporarily store one zero-mass component together with another record carrying the combined binary mass.
-
-When this pattern is identified consistently with an exchange diagnostic, the pipeline reconstructs two component proxies at the stored binary center of mass. Science Mode then displays:
+The normal data flow remains intentionally simple:
 
 ```text
-KS/CHAIN BINARY COMPOSITE
-IDs ... are displayed at one CoM proxy
-This is not classified as a MERGE
+NBODY6 HDF5 + output logs → nbody_bh_data.py → four CSV files → Meta Quest
 ```
 
-The component masses and IDs remain available, but separate component positions and velocities cannot be recovered from that snapshot. A `MERGE` is created only from a parsed NBODY6 `COAL` record.
+`extract_exchange_physics.py` is not required for normal use. Its analysis logic has been incorporated into the main conversion path where needed.
 
-### Missing detailed measurements
+### 1. Prepare the input
 
-If no complete resolved pre/post HDF5 frames are available inside the configured search window, the panel falls back to complete frames reconstructed from `bh_history.csv`. The fallback can show participant masses, velocities, pair separation, and relative velocity, but orbital $a/e$, binding energy, and local escape speed remain unavailable.
+Place the following in one input directory:
 
-The generated `nbody_pipeline_report.json` lists every event omitted from `science_exchange_events.csv` and the corresponding reason.
+- `snapdata.hdf5` or `snapsdata.hdf5`
+- the corresponding NBODY6 log files, normally named `*_output.dat`
 
-## View frames
-
-The position/follow control cycles through the available display frames:
-
-- **Raw**: simulation coordinates and velocities
-- **Cluster CoM**: cluster center-of-mass position and velocity removed
-- **Follow BH**: view centered on a selected BH
-- **Follow PRE binary CoM**: view centered on the pre-event binary
-- **Follow POST binary CoM**: view centered on the post-event binary
-
-Changing the view frame changes world-space motion and label velocities. Fixed Science Mode values marked $v_{\rm cl}$ remain in the cluster center-of-mass frame.
-
-## Requirements
-
-- Meta Quest 2 or Meta Quest 3
-- SideQuest or Android platform tools (`adb`)
-- Python 3
-- `numpy`
-- `h5py`
-- NBODY6 `snapdata.hdf5` or `snapsdata.hdf5`
-- One or more `*_output.dat` files
-
-## Installation
-
-1. Download the latest APK from [Releases](../../releases).
-2. Connect the Quest headset by USB.
-3. Install the APK with SideQuest or ADB:
+The converter requires Python 3, NumPy, and h5py:
 
 ```bash
-adb install NBodyVR_vX.X.apk
+python -m pip install numpy h5py
 ```
 
-4. Launch the application once from **Unknown Sources**, then close it. This creates the application data directory.
+### 2. Convert the data
 
-## Data preparation
-
-Run the included unified pipeline:
+Run the project converter:
 
 ```bash
 python nbody_bh_data.py \
@@ -216,61 +81,267 @@ python nbody_bh_data.py \
   --output-dir /path/to/generated/csv
 ```
 
-The pipeline reads the physical-particle portion of every HDF5 snapshot, parses event and scaling information from the text output, groups simultaneous EXCHANGE diagnostics into net encounters, repairs recognized regularized composite representations, and writes:
+It generates:
 
 | File | Purpose |
-| --- | --- |
-| `bh_history.csv` | BH positions, velocities, masses, IDs, and representation metadata |
-| `bh_events.csv` | Grouped EXCHANGE events, COAL-derived MERGE events, and BH ESCAPE records |
-| `science_exchange_events.csv` | Fixed pre/post EXCHANGE measurements and derived quantities |
-| `science_cluster_dynamics.csv` | Per-snapshot cluster center, velocity, dispersion, and tidal radius |
-| `nbody_pipeline_report.json` | Scaling, row counts, repair counts, and skipped-science diagnostics |
+|---|---|
+| `bh_history.csv` | Black-hole positions, velocities, masses, and time evolution. |
+| `bh_events.csv` | Event list used by the standard UI. |
+| `science_exchange_events.csv` | Resolved exchange participants and fixed pre/post measurements. |
+| `science_cluster_dynamics.csv` | Snapshot-level cluster quantities used by Science Mode. |
+| `nbody_conversion_report.json` | Diagnostic report for checking the conversion; it is not copied to the headset. |
 
-Scaling is read from the NBODY6 `PHYSICAL SCALING` line when available. It can be overridden with `--mass-conv`, `--length-conv`, `--velocity-conv`, and `--time-conv`.
+Inspect `nbody_conversion_report.json` before transfer. Warnings identify missing snapshots, unresolved participants, composite-particle reconstruction, and event records that could not receive detailed measurements.
 
-Use `--no-transfer` to generate files without sending them to a headset. Run `python nbody_bh_data.py --help` for all options.
+### 3. Copy the CSV files to the headset
 
-## Transfer data to Meta Quest
-
-The application first checks `Application.persistentDataPath`, corresponding to:
+The destination is:
 
 ```text
 /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 ```
 
-Copy the four CSV files to that directory with SideQuest, or use ADB:
+With SideQuest, open the headset file manager, navigate to that directory, and copy the four CSV files listed above.
+
+With `adb`:
 
 ```bash
+adb shell mkdir -p /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 adb push bh_history.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 adb push bh_events.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 adb push science_exchange_events.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 adb push science_cluster_dynamics.csv /sdcard/Android/data/com.kawashima.bhvisualizer/files/
 ```
 
-Close the application before replacing the files, then restart it. Reinstalling the APK is unnecessary when only the simulation data changes.
+If Android has not yet created the application directory, launch the installed app once and try again. Restart the app after replacing the files.
 
-`nbody_pipeline_report.json` is for offline diagnosis and does not need to be copied to the headset.
+The application first checks this external directory. If a file is absent, it falls back to the sample copy bundled in `StreamingAssets`. For a consistent dataset, replace all four files together.
 
-## Unity development
+## Science Mode at a glance
 
-The repository contains the Unity project source. Open it in Unity `6000.0.57f1`, select Android as the active build platform, and keep the application package name synchronized with the ADB destination.
+Science Mode adds an information panel above the main UI. It is designed primarily for examining how an exchange encounter changes a binary and redistributes energy and recoil.
 
-Files placed in `Assets/StreamingAssets/` provide built-in fallback data. On the headset, files in the application data directory take priority over embedded StreamingAssets.
+The display is divided into three kinds of information:
 
-Changing C# scripts, UI layout, scenes, shaders, or interaction logic requires rebuilding and reinstalling the APK. Replacing CSV data does not.
+1. **Current playback** — quantities associated with the current animation time.
+2. **Fixed PRE and POST snapshots** — measurements from the nearest resolved snapshots before and after the selected event.
+3. **Event comparison** — orbital, binding-energy, recoil, and escape diagnostics associated with that event.
+
+PRE and POST are deliberately shown together. They are fixed measurements bracketing the event, not two states that switch when the playback cursor crosses the event time.
+
+Masses are displayed as solar masses. World-space labels use `M☉`. TextMesh Pro panels use `M<sub>⊙</sub>` when the selected font asset contains the solar symbol; otherwise the fallback is `M<sub>sun</sub>`.
+
+## View and follow modes
+
+The selected view frame changes displayed positions and world-space velocity labels, but it does not change the scientific event measurements reported in the cluster centre-of-mass frame.
+
+| Mode | Meaning |
+|---|---|
+| **Raw** | Original simulation coordinates. |
+| **Cluster CoM** | Cluster centre-of-mass motion is removed. |
+| **Follow BH** | Positions and velocities are shown relative to a selected black hole. |
+| **Follow binary CoM** | The view follows the selected binary centre of mass. |
+
+For an exchange, the pre-event and post-event binaries can have different members. Fixed PRE/POST measurements therefore remain separate even when the camera follows one selected pair.
+
+## Appendix A: Science Mode details
+
+### Event and snapshot times
+
+The panel header shows the selected event time parsed from the NBODY6 event log. PRE and POST snapshot times are shown separately because an HDF5 snapshot usually does not exist at the exact event time.
+
+- **Event: t** — selected log-event time converted to Myr.
+- **Current time** — current animation time.
+- **PRE snapshot / POST snapshot** — HDF5 times used for fixed measurements.
+
+An event can therefore occur between two stored snapshots. The event time must not be replaced by the time of either neighbouring snapshot.
+
+### Current playback quantities
+
+For each snapshot, the cluster centre-of-mass velocity is calculated from physical particles within the adopted tidal boundary:
+
+$$
+\boldsymbol{V}_{\mathrm{cl}}
+=
+\frac{\sum_i m_i\boldsymbol{v}_i}{\sum_i m_i}.
+$$
+
+The number-weighted three-dimensional RMS speed and corresponding one-dimensional dispersion are
+
+$$
+v_{\mathrm{rms,3D}}
+=
+\sqrt{\frac{1}{N}\sum_i
+\left|\boldsymbol{v}_i-\boldsymbol{V}_{\mathrm{cl}}\right|^2},
+\qquad
+\sigma_{\mathrm{1D}}=\frac{v_{\mathrm{rms,3D}}}{\sqrt{3}}.
+$$
+
+These are cluster-wide quantities, not a dispersion measured from black holes alone.
+
+For a binary with component masses $m_1$ and $m_2$,
+
+$$
+\boldsymbol{V}_{\mathrm{bin}}
+=
+\frac{m_1\boldsymbol{v}_1+m_2\boldsymbol{v}_2}{m_1+m_2},
+\qquad
+v_{\mathrm{cl,bin}}
+=
+\left|\boldsymbol{V}_{\mathrm{bin}}-\boldsymbol{V}_{\mathrm{cl}}\right|.
+$$
+
+The panel also reports $v/\sigma$. This measures how unusual a speed is relative to cluster random motion; it is not by itself an escape criterion.
+
+### Fixed PRE and POST measurements
+
+For a resolved exchange of the form
+
+$$
+(A+B)+C \longrightarrow (A+C)+B,
+$$
+
+Science Mode displays both:
+
+- **PRE:** the original binary $A+B$ and incoming object $C$.
+- **POST:** the resulting binary $A+C$ and outgoing object $B$.
+
+Each side includes participant IDs, masses, cluster-frame speeds, $v/\sigma$, an approximate local escape speed, and $v/v_{\mathrm{esc}}$ where available.
+
+The local escape-speed estimate is
+
+$$
+v_{\mathrm{esc}}(r)
+=
+\sqrt{2G\sum_i\frac{m_i}{\max(r,r_i)}}.
+$$
+
+The target object is excluded from the sum. The cluster is treated as spherical and truncated at the adopted tidal radius. This is a useful local diagnostic, but it is not the complete Jacobi escape condition in an external tidal field.
+
+### Binary orbit and binding energy
+
+When the NBODY6 log provides the binary semimajor axis $a$ and eccentricity $e$, the binding-energy magnitude is
+
+$$
+|E_b|=\frac{Gm_1m_2}{2a},
+$$
+
+and the reported change is
+
+$$
+\Delta E_b=|E_{b,\mathrm{after}}|-|E_{b,\mathrm{before}}|.
+$$
+
+- $\Delta E_b>0$: the binary hardened and released binding energy.
+- $\Delta E_b<0$: the binary softened.
+
+The logged $a$ is distinct from the visible distance between HDF5 coordinates. Regularized binary components can be stored at a shared centre-of-mass position, so a displayed separation of zero does not imply physical contact.
+
+### Simple recoil model
+
+This is a classical three-body recoil estimate, not gravitational-wave merger recoil. Let
+
+$$
+M_b=m'_1+m'_2,
+\qquad
+M_{123}=M_b+m'_3,
+$$
+
+where $m'_3$ is the outgoing single mass. If the released binding energy becomes translational kinetic energy in the final triple centre-of-mass frame, momentum conservation gives
+
+$$
+v_{b,\mathrm{pred}}
+=
+\sqrt{\frac{2\Delta E_b\,m'_3}{M_bM_{123}}},
+\qquad
+v_{3,\mathrm{pred}}
+=
+\sqrt{\frac{2\Delta E_b\,M_b}{m'_3M_{123}}}.
+$$
+
+The panel compares these predictions with snapshot measurements and reports measured/predicted ratios and $\Delta K_{\mathrm{measured}}/\Delta E_b$. Values need not equal one because the model omits incoming kinetic energy, the cluster potential, transient multiples, and snapshot-time offsets. If $\Delta E_b\leq0$, the prediction is shown as unavailable.
+
+### NBODY6 chain log and prompt escape
+
+When present, `CHAIN BINARY VCM` and `CHAIN ESCAPE VF` are values read directly from the NBODY6 chain output. They can differ from HDF5-derived measurements because their times and reference frames are not necessarily identical.
+
+The prompt-escape field searches for a linked `BH ESCAPE` record within 100 N-body time units after the encounter. In the bundled sample this corresponds to 22.7 Myr. **Not linked** means that the prompt criterion was not satisfied; it does not prove that the object never escaped later.
+
+### Pair markers in the 3D view
+
+The PRE and POST pairs are both shown for comparison:
+
+- magenta: pre-event binary
+- cyan: post-event binary
+
+Their visible separation is a snapshot-coordinate separation, not the logged orbital semimajor axis.
+
+### KS/CHAIN composite particles
+
+NBODY6 HDF5 snapshots may contain physical particles in rows `0:N` and regularization pseudo-particles in later rows. The converter separates these regions and excludes pseudo-particles from ordinary physical-particle statistics.
+
+Some physical members can appear as zero-mass placeholders while a KS/CHAIN centre-of-mass row stores their combined mass. When the structure is identifiable, `nbody_bh_data.py` reconstructs proxy members at the composite centre-of-mass position so that the encounter can still be followed. Such reconstruction is recorded in `nbody_conversion_report.json`.
+
+A composite representation is not interpreted as a merger. A merger is added only from an explicit NBODY6 `COAL` record.
+
+### Missing measurements
+
+Detailed Science Mode information can remain unavailable when:
+
+- a participant is missing from the nearest suitable snapshot;
+- a composite particle cannot be reconstructed unambiguously;
+- the event log lacks orbital information;
+- the event cannot be matched safely across PRE and POST data.
+
+In that case the standard trajectory and event display can still work, but orbital elements, binding-energy changes, escape diagnostics, or recoil comparisons may be absent. The converter reports the reason instead of silently inventing a measurement.
+
+## Appendix B: Data-pipeline details
+
+`nbody_bh_data.py` performs the full application conversion workflow:
+
+1. Reads NBODY6 scaling and time information.
+2. Separates physical rows `0:N` from later KS/CHAIN pseudo-particles.
+3. Extracts black-hole histories from HDF5 snapshots.
+4. Parses exchange, coalescence, and escape records from output logs.
+5. Groups simultaneous exchange log lines into one net encounter where appropriate.
+6. Reconstructs identifiable composite members without treating them as mergers.
+7. Resolves fixed PRE and POST participants and computes cluster diagnostics.
+8. Writes the four runtime CSV files and a diagnostic JSON report.
+
+The logic is based on data structure and event relationships, not on a hard-coded time such as 1087.784 Myr. Different NBODY6 runs can still require review when their log format, scaling metadata, or regularization output differs from the supported forms; consult the diagnostic report whenever warnings appear.
+
+## Appendix C: Unity development
+
+The project uses Unity `6000.0.57f1`.
+
+For editor development:
+
+1. Clone the repository.
+2. Open the project in the matching Unity version.
+3. Place a bundled fallback dataset in `Assets/StreamingAssets/` if required.
+4. Build for Android and install the APK on the headset.
+
+Files in `Assets/StreamingAssets/` are packaged into the APK. Files copied later to
+
+```text
+/sdcard/Android/data/com.kawashima.bhvisualizer/files/
+```
+
+override those bundled files at runtime. Changing C# scripts requires a new APK build; replacing compatible CSV data does not.
 
 ## Scientific scope and limitations
 
-- Event times come from NBODY6 text diagnostics; trajectory and cluster values come from discrete HDF5 snapshots.
-- Pre/post event values are sampled, not time interpolated.
-- Multiple EXCHANGE diagnostics at the same encounter time can describe intermediate configurations. The pipeline selects the closest resolved pre-event and post-event pairs and stores one net exchange.
-- Spherical local escape speed is an approximation and does not include the complete external tidal escape condition.
-- A regularized center-of-mass proxy preserves recoverable IDs and masses but cannot reconstruct unresolved internal phase space.
-- The simple recoil model is diagnostic rather than a complete scattering calculation.
+- Event times come from parsed NBODY6 logs; trajectory measurements come from discrete HDF5 snapshots.
+- Nearest snapshots can be separated from the event by a finite interval.
+- Escape speed is a spherical, cluster-self-gravity approximation.
+- A momentary $v/v_{\mathrm{esc}}>1$ is not identical to confirmed long-term escape.
+- The recoil model is an idealized energy-and-momentum estimate.
+- KS/CHAIN reconstruction is conservative and can leave events unresolved.
+- Visual black-hole sizes and pair-line distances are display aids, not literal horizon or binary-orbit scales.
 
 ## References
 
 - Aarseth, S. J. (1999), “From NBODY1 to NBODY6,” *Publications of the Astronomical Society of the Pacific*, 111, 1333. [https://doi.org/10.1086/316455](https://doi.org/10.1086/316455)
 - Heggie, D. & Hut, P. (2003), *The Gravitational Million-Body Problem*. [https://doi.org/10.1017/CBO9781139164535](https://doi.org/10.1017/CBO9781139164535)
 - Spitzer, L. (1987), *Dynamical Evolution of Globular Clusters*. [https://doi.org/10.1515/9781400858736](https://doi.org/10.1515/9781400858736)
-- Wang, L. et al. (2015), “NBODY6++GPU: ready for the gravitational million-body problem,” *Monthly Notices of the Royal Astronomical Society*, 450, 4070. [https://doi.org/10.1093/mnras/stv817](https://doi.org/10.1093/mnras/stv817)
+- Wang, L. et al. (2015), “NBODY6++GPU: Ready for the gravitational million-body problem,” *Monthly Notices of the Royal Astronomical Society*, 450, 4070. [https://doi.org/10.1093/mnras/stv817](https://doi.org/10.1093/mnras/stv817)
