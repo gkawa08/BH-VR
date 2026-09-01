@@ -15,7 +15,6 @@ The main controls are:
 | **Event list** | Jump to a detected exchange, merger, or escape event. |
 | **BH size** | Change the visual scale of black holes. This does not change their physical masses. |
 | **Speed** | Change playback speed. |
-| **Velocity arrows** | Show or hide velocity vectors. |
 | **Position / Follow** | Select the display frame or follow a black hole or binary centre of mass. |
 | **Science** | Show the scientific information panel above the main controls. |
 | **Help** | Show the in-app control guide. |
@@ -62,7 +61,7 @@ NBODY6 HDF5 + output logs → nbody_bh_data.py → four CSV files → Meta Quest
 
 Place the following in one input directory:
 
-- `snapdata.hdf5` or `snapsdata.hdf5`
+- `snapdata.hdf5`
 - the corresponding NBODY6 log files, normally named `*_output.dat`
 
 The converter requires Python 3, NumPy, and h5py:
