@@ -160,28 +160,28 @@ An event can therefore occur between two stored snapshots. The event time must n
 
 For each snapshot, the cluster centre-of-mass velocity is calculated from physical particles within the adopted tidal boundary:
 
-$$
+```math
 \boldsymbol{V}_{\mathrm{cl}}
 =
 \frac{\sum_i m_i\boldsymbol{v}_i}{\sum_i m_i}.
-$$
+```
 
 The number-weighted three-dimensional RMS speed and corresponding one-dimensional dispersion are
 
-$$
+```math
 v_{\mathrm{rms,3D}}
 =
 \sqrt{\frac{1}{N}\sum_i
 \left|\boldsymbol{v}_i-\boldsymbol{V}_{\mathrm{cl}}\right|^2},
 \qquad
 \sigma_{\mathrm{1D}}=\frac{v_{\mathrm{rms,3D}}}{\sqrt{3}}.
-$$
+```
 
 These are cluster-wide quantities, not a dispersion measured from black holes alone.
 
 For a binary with component masses $m_1$ and $m_2$,
 
-$$
+```math
 \boldsymbol{V}_{\mathrm{bin}}
 =
 \frac{m_1\boldsymbol{v}_1+m_2\boldsymbol{v}_2}{m_1+m_2},
@@ -189,7 +189,7 @@ $$
 v_{\mathrm{cl,bin}}
 =
 \left|\boldsymbol{V}_{\mathrm{bin}}-\boldsymbol{V}_{\mathrm{cl}}\right|.
-$$
+```
 
 The panel also reports $v/\sigma$. This measures how unusual a speed is relative to cluster random motion; it is not by itself an escape criterion.
 
@@ -197,9 +197,9 @@ The panel also reports $v/\sigma$. This measures how unusual a speed is relative
 
 For a resolved exchange of the form
 
-$$
+```math
 (A+B)+C \longrightarrow (A+C)+B,
-$$
+```
 
 Science Mode displays both:
 
@@ -210,11 +210,11 @@ Each side includes participant IDs, masses, cluster-frame speeds, $v/\sigma$, an
 
 The local escape-speed estimate is
 
-$$
+```math
 v_{\mathrm{esc}}(r)
 =
 \sqrt{2G\sum_i\frac{m_i}{\max(r,r_i)}}.
-$$
+```
 
 The target object is excluded from the sum. The cluster is treated as spherical and truncated at the adopted tidal radius. This is a useful local diagnostic, but it is not the complete Jacobi escape condition in an external tidal field.
 
@@ -222,15 +222,15 @@ The target object is excluded from the sum. The cluster is treated as spherical 
 
 When the NBODY6 log provides the binary semimajor axis $a$ and eccentricity $e$, the binding-energy magnitude is
 
-$$
+```math
 |E_b|=\frac{Gm_1m_2}{2a},
-$$
+```
 
 and the reported change is
 
-$$
+```math
 \Delta E_b=|E_{b,\mathrm{after}}|-|E_{b,\mathrm{before}}|.
-$$
+```
 
 - $\Delta E_b>0$: the binary hardened and released binding energy.
 - $\Delta E_b<0$: the binary softened.
@@ -241,15 +241,15 @@ The logged $a$ is distinct from the visible distance between HDF5 coordinates. R
 
 This is a classical three-body recoil estimate, not gravitational-wave merger recoil. Let
 
-$$
+```math
 M_b=m'_1+m'_2,
 \qquad
 M_{123}=M_b+m'_3,
-$$
+```
 
 where $m'_3$ is the outgoing single mass. If the released binding energy becomes translational kinetic energy in the final triple centre-of-mass frame, momentum conservation gives
 
-$$
+```math
 v_{b,\mathrm{pred}}
 =
 \sqrt{\frac{2\Delta E_b\,m'_3}{M_bM_{123}}},
@@ -257,7 +257,7 @@ v_{b,\mathrm{pred}}
 v_{3,\mathrm{pred}}
 =
 \sqrt{\frac{2\Delta E_b\,M_b}{m'_3M_{123}}}.
-$$
+```
 
 The panel compares these predictions with snapshot measurements and reports measured/predicted ratios and $\Delta K_{\mathrm{measured}}/\Delta E_b$. Values need not equal one because the model omits incoming kinetic energy, the cluster potential, transient multiples, and snapshot-time offsets. If $\Delta E_b\leq0$, the prediction is shown as unavailable.
 
