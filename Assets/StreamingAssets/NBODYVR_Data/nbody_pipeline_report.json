@@ -1,0 +1,323 @@
+{
+  "hdf5": "/Users/gaku/work/NBODYVR/NBODY6/snapdata.hdf5",
+  "output_files": [
+    "0_output.dat",
+    "1_output.dat",
+    "2_output.dat",
+    "3_output.dat",
+    "4_output.dat"
+  ],
+  "scaling": {
+    "mass": 127918.2,
+    "length": 3.1,
+    "velocity": 13.325,
+    "time": 0.227
+  },
+  "snapshot_count": 441,
+  "bh_history_rows": 45851,
+  "raw_exchange_diagnostics": 10,
+  "grouped_exchange_events": 9,
+  "net_exchange_events": 8,
+  "transient_exchange_events": 1,
+  "science_event_rows": 10,
+  "science_exchange_rows": 8,
+  "science_transient_exchange_rows": 1,
+  "science_merge_rows": 1,
+  "regularized_frames_repaired": 18,
+  "merge_events": 1,
+  "coal_lines_found": 3,
+  "coal_lines_parsed": 3,
+  "skipped_science": [],
+  "skipped_merge_science": [],
+  "exchange_group_diagnostics": [
+    {
+      "exchange_index": 0,
+      "event_time_nbody": 2067.0,
+      "event_time_myr": 469.209,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        108659,
+        143871
+      ],
+      "final_pair": [
+        108659,
+        165870
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            108659,
+            143871
+          ],
+          "after_pair": [
+            108659,
+            165870
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 1,
+      "event_time_nbody": 2079.0,
+      "event_time_myr": 471.933,
+      "event_type": "TRANSIENT EXCHANGE",
+      "initial_pair": [
+        108659,
+        165870
+      ],
+      "final_pair": [
+        108659,
+        165870
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            108659,
+            165870
+          ],
+          "after_pair": [
+            108659,
+            143871
+          ]
+        },
+        {
+          "before_pair": [
+            108659,
+            143871
+          ],
+          "after_pair": [
+            108659,
+            165870
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 2,
+      "temporary_ids": [
+        143871
+      ],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 2,
+      "event_time_nbody": 2229.0,
+      "event_time_myr": 505.983,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        108659,
+        165870
+      ],
+      "final_pair": [
+        3838,
+        108659
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            108659,
+            165870
+          ],
+          "after_pair": [
+            3838,
+            108659
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 3,
+      "event_time_nbody": 2748.0,
+      "event_time_myr": 623.796,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        3838,
+        108659
+      ],
+      "final_pair": [
+        3838,
+        178606
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            3838,
+            108659
+          ],
+          "after_pair": [
+            3838,
+            178606
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 4,
+      "event_time_nbody": 2789.0,
+      "event_time_myr": 633.1030000000001,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        3838,
+        178606
+      ],
+      "final_pair": [
+        115438,
+        178606
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            3838,
+            178606
+          ],
+          "after_pair": [
+            115438,
+            178606
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 5,
+      "event_time_nbody": 2907.0,
+      "event_time_myr": 659.889,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        115438,
+        178606
+      ],
+      "final_pair": [
+        14205,
+        115438
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            115438,
+            178606
+          ],
+          "after_pair": [
+            14205,
+            115438
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 6,
+      "event_time_nbody": 3279.0,
+      "event_time_myr": 744.333,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        14205,
+        115438
+      ],
+      "final_pair": [
+        115438,
+        148477
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            14205,
+            115438
+          ],
+          "after_pair": [
+            115438,
+            148477
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 7,
+      "event_time_nbody": 3538.0,
+      "event_time_myr": 803.126,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        60751,
+        151114
+      ],
+      "final_pair": [
+        60751,
+        178606
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            60751,
+            151114
+          ],
+          "after_pair": [
+            60751,
+            178606
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    },
+    {
+      "exchange_index": 8,
+      "event_time_nbody": 4014.0,
+      "event_time_myr": 911.178,
+      "event_type": "EXCHANGE",
+      "initial_pair": [
+        115438,
+        148477
+      ],
+      "final_pair": [
+        36532,
+        115438
+      ],
+      "raw_transitions": [
+        {
+          "before_pair": [
+            115438,
+            148477
+          ],
+          "after_pair": [
+            36532,
+            115438
+          ]
+        }
+      ],
+      "raw_diagnostic_count": 1,
+      "temporary_ids": [],
+      "science_status": "available",
+      "science_reason": ""
+    }
+  ],
+  "outputs": {
+    "history": "/Users/gaku/work/NBODYVR/NBODYVR_Sample_1000Myr/bh_history.csv",
+    "events": "/Users/gaku/work/NBODYVR/NBODYVR_Sample_1000Myr/bh_events.csv",
+    "science_exchange": "/Users/gaku/work/NBODYVR/NBODYVR_Sample_1000Myr/science_events.csv",
+    "science_cluster": "/Users/gaku/work/NBODYVR/NBODYVR_Sample_1000Myr/science_cluster_dynamics.csv",
+    "report": "/Users/gaku/work/NBODYVR/NBODYVR_Sample_1000Myr/nbody_pipeline_report.json"
+  }
+}

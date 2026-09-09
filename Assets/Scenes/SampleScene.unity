@@ -6273,6 +6273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 883f8fe11bb6643ee9c17d2347bfbb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  datasetDropdown: {fileID: 0}
   historyFile: bh_history.csv
   eventsFile: bh_events.csv
   spherePrefab: {fileID: 5499359860801642632, guid: 8bc6a1850daeb4b4282cfd6b81e6d9f4, type: 3}
@@ -6308,6 +6309,7 @@ MonoBehaviour:
   binaryColor: {r: 1, g: 0, b: 1, a: 1}
   interloperColor: {r: 1, g: 0, b: 0, a: 1}
   postMergeColor: {r: 0, g: 1, b: 1, a: 1}
+  transientExchangeColor: {r: 1, g: 0.55, b: 0.25, a: 1}
   dimColor: {r: 0.1, g: 0.1, b: 0.1, a: 0.1}
   labelFontSize: 100
   labelCharacterSize: 0.02
@@ -6315,6 +6317,7 @@ MonoBehaviour:
   labelSpreadX: 1.5
   labelSpreadY: 0.5
   calloutDistanceMultiplier: 1.35
+  scienceLabelDistanceMultiplier: 1.25
   keepLabelScreenSize: 1
   labelReferenceDistance: 10
   minimumLabelDistanceScale: 0.5
@@ -6343,8 +6346,15 @@ MonoBehaviour:
   scienceAfterPairColor: {r: 0, g: 1, b: 1, a: 1}
   scienceExchangeFile: science_exchange_events.csv
   scienceClusterFile: science_cluster_dynamics.csv
-  playbackTimeIsNbody: 1
+  playbackTimeIsNbody: 0
   scienceEventTimeTolerance: 0.05
+  groupSimultaneousExchangeDiagnostics: 1
+  exchangeGroupingTimeTolerance: 0.001
+  scienceCompleteSnapshotSearchWindow: 50
+  ksCompositeMassTolerance: 0.02
+  positionSciencePanelAboveUi: 1
+  sciencePanelTopOffset: {x: 0, y: 20}
+  sciencePanelSize: {x: 760, y: 300}
   timeSlider: {fileID: 1453246965}
   speedSlider: {fileID: 128394961}
   sizeSlider: {fileID: 1907318953}

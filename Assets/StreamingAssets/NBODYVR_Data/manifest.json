@@ -1,0 +1,26 @@
+{
+  "format_version": 1,
+  "dataset_name": "NBODYVR_Sample_1000Myr",
+  "created_utc": "2026-09-08T04:50:22.247318+00:00",
+  "source_hdf5": "snapdata.hdf5",
+  "history_file": "bh_history.csv",
+  "events_file": "bh_events.csv",
+  "science_events_file": "science_events.csv",
+  "science_cluster_file": "science_cluster_dynamics.csv",
+  "time_unit": "Myr",
+  "length_unit": "pc",
+  "mass_unit": "M_sun",
+  "velocity_unit": "km/s",
+  "scaling": {
+    "mass": 127918.2,
+    "length": 3.1,
+    "velocity": 13.325,
+    "time": 0.227
+  },
+  "snapshot_count": 441,
+  "bh_count": 349,
+  "event_count": 12,
+  "science_available": true,
+  "unavailable_science_count": 0,
+  "warnings": []
+}
