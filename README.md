@@ -19,17 +19,45 @@ The APK includes a sample dataset, so the application can be tried without runni
 
 ### Exchange event
 
-| Before | After |
-|:---:|:---:|
-| <img src="screenshots/Exchange_before.png" alt="NBody-VR display immediately before an exchange event" width="430"> | <img src="screenshots/Exchange_after.png" alt="NBody-VR display immediately after an exchange event" width="430"> |
-| The original binary members are magenta and the incoming 'interloper' is red. | The post-event state is shown after the recorded exchange. |
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="50%">Before</th>
+      <th width="50%">After</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="50%" align="center"><img src="screenshots/Exchange_before.png" alt="NBody-VR display immediately before an exchange event" width="100%"></td>
+      <td width="50%" align="center"><img src="screenshots/Exchange_after.png" alt="NBody-VR display immediately after an exchange event" width="100%"></td>
+    </tr>
+    <tr>
+      <td width="50%">The original binary members are magenta and the incoming 'interloper' is red.</td>
+      <td width="50%">The post-event state is shown after the recorded exchange.</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Merge event
 
-| Before | After |
-|:---:|:---:|
-| <img src="screenshots/Merge_before.png" alt="NBody-VR display immediately before a merger" width="430"> | <img src="screenshots/Merge_after.png" alt="NBody-VR display immediately after a merger" width="430"> |
-| The two pre-merge binary members are highlighted in magenta. | The merged remnant is highlighted in cyan. |
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="50%">Before</th>
+      <th width="50%">After</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="50%" align="center"><img src="screenshots/Merge_before.png" alt="NBody-VR display immediately before a merger" width="100%"></td>
+      <td width="50%" align="center"><img src="screenshots/Merge_after.png" alt="NBody-VR display immediately after a merger" width="100%"></td>
+    </tr>
+    <tr>
+      <td width="50%">The two pre-merge binary members are highlighted in magenta.</td>
+      <td width="50%">The merged remnant is highlighted in cyan.</td>
+    </tr>
+  </tbody>
+</table>
 
 The spheres, labels, and trajectory lines are display aids. Sphere diameter is proportional to the mass stored in the visualization data multiplied by the current **Size** setting; it is not a black-hole horizon scale. See [Appendix: Science Mode](#appendix-science-mode) for the precise meaning and limitations of the event display.
 
@@ -123,15 +151,9 @@ The current defaults in `CsvVisualizer` are:
 
 The converter reads one NBODY6 run and builds a self-contained NBody-VR dataset folder.
 
-```mermaid
-flowchart LR
-    A["snapdata.hdf5<br/>or snapsdata.hdf5"] --> C["nbody_bh_data.py"]
-    B["*_output.dat"] --> C
-    C --> D["NBody-VR dataset folder"]
-    D --> E["Review<br/>nbody_pipeline_report.json"]
-    E --> F["ADB or SideQuest"]
-    F --> G["Meta Quest<br/>NBody-VR Visualizer"]
-```
+<p align="center">
+  <img src="screenshots/NBODYVR_flow.png" alt="Flow from NBODY6 HDF5 snapshots and output logs through nbody_bh_data.py, generated datasets, transfer, and Meta Quest" width="1000">
+</p>
 
 ### 1. Prepare the input directory
 
