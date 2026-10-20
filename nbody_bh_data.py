@@ -1621,9 +1621,9 @@ def resolve_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--data-dir",
-        help="HDF5 input directory and default log directory",
+        help="Snapshot directory (.hdf5); defaults to .",
     )
-    parser.add_argument("--log-dir", help="Log directory; defaults to --data-dir")
+    parser.add_argument("--log-dir", help="Event log directory; defaults to .")
     parser.add_argument("--output-dir")
     parser.add_argument("--hdf5", default="")
     parser.add_argument("--package-name", default="com.kawashima.bhvisualizer")
@@ -1643,12 +1643,12 @@ def resolve_arguments():
     args = parser.parse_args()
     interactive = args.data_dir is None
     if args.data_dir is None:
-        args.data_dir = input("Enter data directory [default: .]: ").strip() or "."
+        args.data_dir = input("Enter snapshot directory (.hdf5) [default: .]: ").strip() or "."
     if args.log_dir is None:
         args.log_dir = (
-            input(f"Enter log directory [default: {args.data_dir}]: ").strip()
-            or args.data_dir
-        ) if interactive else args.data_dir
+            input("Enter event log directory (*_output.dat or output.dat) [default: .]: ").strip()
+            or "."
+        ) if interactive else "."
     if args.output_dir is None:
         args.output_dir = input("Dataset folder [default: NBODYVR_Data]: ").strip() or "NBODYVR_Data"
         if not args.check_only:
