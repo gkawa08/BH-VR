@@ -317,8 +317,26 @@ def parse_chain_escape(line):
         return None
 
 
-def parse_logs(data_dir, bh_type, time_conv):
-    output_files = sorted(glob.glob(os.path.join(data_dir, "*_output.dat")), key=natural_key)
+def find_output_files(log_dir):
+    output_files = sorted(
+        (
+            path
+            for path in glob.glob(os.path.join(log_dir, "*_output.dat"))
+            if os.path.isfile(path)
+        ),
+        key=natural_key,
+    )
+    if output_files:
+        return output_files
+    fallback = os.path.join(log_dir, "output.dat")
+    if os.path.isfile(fallback):
+        return [fallback]
+    raise FileNotFoundError(
+        f"No *_output.dat or output.dat files were found in {log_dir}"
+    )
+
+
+def parse_logs(output_files, bh_type, time_conv):
     raw_events = []
     cluster_log = []
     coal_lines_found = 0
@@ -1601,7 +1619,11 @@ def resolve_path_from_script(value):
 
 def resolve_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-dir")
+    parser.add_argument(
+        "--data-dir",
+        help="HDF5 input directory and default log directory",
+    )
+    parser.add_argument("--log-dir", help="Log directory; defaults to --data-dir")
     parser.add_argument("--output-dir")
     parser.add_argument("--hdf5", default="")
     parser.add_argument("--package-name", default="com.kawashima.bhvisualizer")
@@ -1619,8 +1641,14 @@ def resolve_arguments():
     parser.add_argument("--composite-mass-tolerance", type=float, default=0.02)
     parser.add_argument("--max-time-myr", type=float)
     args = parser.parse_args()
+    interactive = args.data_dir is None
     if args.data_dir is None:
         args.data_dir = input("Enter data directory [default: .]: ").strip() or "."
+    if args.log_dir is None:
+        args.log_dir = (
+            input(f"Enter log directory [default: {args.data_dir}]: ").strip()
+            or args.data_dir
+        ) if interactive else args.data_dir
     if args.output_dir is None:
         args.output_dir = input("Dataset folder [default: NBODYVR_Data]: ").strip() or "NBODYVR_Data"
         if not args.check_only:
@@ -1679,17 +1707,25 @@ def limit_logs_to_time(logs, max_time_myr, time_conv):
 def main():
     args = resolve_arguments()
     data_dir = resolve_path_from_script(args.data_dir)
+    log_dir = resolve_path_from_script(args.log_dir)
     output_dir = resolve_path_from_script(args.output_dir)
     print(f"Input directory: {data_dir}")
     print(f"Dataset output: {output_dir}")
     destination_dir = output_dir
     if not re.fullmatch(r"[A-Za-z0-9_-]+", os.path.basename(destination_dir)):
         raise ValueError("Use letters, digits, underscores or hyphens for the dataset folder name.")
-    if os.path.commonpath([os.path.realpath(destination_dir), os.path.realpath(data_dir)]) == os.path.realpath(destination_dir):
-        raise ValueError("The dataset folder must not contain or equal the NBODY input folder.")
-    output_files = sorted(glob.glob(os.path.join(data_dir, "*_output.dat")), key=natural_key)
-    if not output_files:
-        raise FileNotFoundError(f"No *_output.dat files were found in {data_dir}")
+    output_files = find_output_files(log_dir)
+    hdf5_path = choose_hdf5(data_dir, args.hdf5)
+    for input_dir in (data_dir, log_dir, os.path.dirname(hdf5_path)):
+        if os.path.commonpath([os.path.realpath(destination_dir), os.path.realpath(input_dir)]) == os.path.realpath(destination_dir):
+            raise ValueError("The dataset folder must not contain or equal an NBODY input folder.")
+    print(f"HDF5 file: {hdf5_path}")
+    print("Log files to read:")
+    for path in output_files:
+        print(f"  {path}")
+    if input("Are these files correct? (y/n) [default: n]: ").strip().lower() not in ("y", "yes"):
+        print("Cancelled.")
+        return
     detected = parse_scaling(output_files)
     scaling = {
         "mass": args.mass_conv if args.mass_conv is not None else detected["mass"],
@@ -1702,10 +1738,9 @@ def main():
         f"R*={scaling['length']} pc, M*={scaling['mass']} M_sun, "
         f"V*={scaling['velocity']} km/s, T*={scaling['time']} Myr"
     )
-    hdf5_path = choose_hdf5(data_dir, args.hdf5)
     keys = validate_input(hdf5_path, scaling)
     keys = select_snapshot_keys(hdf5_path, keys, scaling["time"], args.max_time_myr)
-    logs = parse_logs(data_dir, args.bh_type, scaling["time"])
+    logs = parse_logs(output_files, args.bh_type, scaling["time"])
     logs = limit_logs_to_time(logs, args.max_time_myr, scaling["time"])
     if args.check_only:
         print(f"Logs readable: {len(logs['output_files'])} files; {len(logs['raw_events'])} parsed event records.")
@@ -1905,3 +1940,4 @@ if __name__ == "__main__":
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
         print(f"NBODYVR: {error}\nInput files are unchanged. Check the paths and input format, then retry.", file=sys.stderr)
         sys.exit(1)
+
