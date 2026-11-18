@@ -1,44 +1,50 @@
-# NBody-VR Visualizer
+# BH-VR
 
 Explore black-hole dynamics from NBODY6 simulations in virtual reality on a Meta Quest headset. Watch black-hole motion, select encounters and mergers, follow individual objects or binaries, and inspect the simulation data in Science Mode.
 
-**The APK includes a sample dataset. You can start exploring without Unity, Python, or your own simulation files.**
+**The APK includes a sample dataset. You can start exploring without Unity editor, Python, or your own simulation files.**
 
 <p align="center">
-  <img src="screenshots/default_video.gif" alt="Black holes moving through the NBody-VR scene" width="900">
+  <img src="screenshots/default_video.gif" alt="Black holes moving through the BH-VR scene" width="900">
 </p>
 
 - [Try the bundled sample](#quick-play-with-the-bundled-sample)
 - [Learn the controls](#basic-controls-and-exploration)
-- [Use your own simulation](#use-your-own-nbody6-data)
-- [Edit the Unity project](#edit-and-build-the-unity-project)
+- [Use your own simulation outputs](#use-your-own-nbody6-data)
+- [Edit the app with Unity editor](#edit-and-build-the-unity-project)
 - [Understand Science Mode](#appendix-science-mode)
 
 ## What can you explore?
 
 | View | What to try |
 |---|---|
-| **Black-hole population** | Play through the simulation and inspect motion and trajectories across the cluster. |
-| **Three-body encounters** | Select an `EXCHANGE` event to inspect the original binary, incoming participant, and post-event configuration. `TRANSIENT EXCHANGE` records identify grouped diagnostics that return to the original pair. |
-| **Binary black-hole mergers** | Select a `MERGE` event to inspect the progenitors and remnant around a merger recorded by NBODY6. |
+| **Black-hole distribution** | Play through the visualized simulation and inspect positions and motions of different mass black-holes across the cluster. |
+| **Three-body encounters** | Select an `EXCHANGE` event to inspect the original binary, incoming interloper, and post-event configuration. `TRANSIENT EXCHANGE` records identify grouped diagnostics that return to the original pair. |
+| **Binary black-hole mergers** | Select a `MERGE` event to inspect the progenitor pair and posterior remnant around a recorded merger event. |
 | **Science Mode** | Compare logged event information and snapshot measurements with calculated quantities and explicitly labelled model references. |
 
 <p align="center">
   <img src="docs/images/workflow-overview.png" alt="Workflow overview: download the APK, install it on a headset, complete the tutorial, and explore the black-hole population, encounters, and mergers" width="1000">
 </p>
 
-<p align="center"><em>Workflow overview, supplied as a draft for the JOSS article. The detailed guides below expand the installation and custom-data steps.</em></p>
+<p align="center"><em>Workflow overview.</em></p>
 
 Positions and velocities come from stored simulation snapshots, and event times come from NBODY6 logs. The app visualizes those outputs; it does not run a new N-body simulation. Sphere sizes and trajectory lines are display aids, and reconstructed regularized components do not resolve the internal orbit. See the [Science Mode guide](docs/science-mode.md) for interpretation and limitations. For the simulation framework, see [Aarseth (1999)](https://doi.org/10.1086/316455).
 
 ## Quick Play with the bundled sample
 
-You need a Meta Quest headset, a computer, and a USB data cable.
+You need a Meta Quest headset, a computer, and a data cable.
 
 1. Download the APK from [GitHub Releases](https://github.com/gkawa08/nbody-vr-visualizer-unity/releases).
-2. Transfer the APK with **File Explorer** on Windows or a tool such as **ADB**, **OpenMTP**, or **SideQuest** on Mac, then install it from the headset's **Files** app.
-3. Open the app from the headset's sideloaded/unknown-source applications section.
-4. Choose **EN** or **JP** in the tutorial, then select **Start Exploring**.
+2. Transfer the APK into your headset's **Files** app. Recommended instructions are below:
+
+| Computer | Instructions |
+|---|---|
+| **Windows** | Use File Explorer after allowing USB file access on the headset; no additional file-transfer application is normally needed. |
+| **Mac** | Use an Android file-transfer tool such as [Android Debug Bridge (`adb`)](https://developer.android.com/tools/adb), [OpenMTP](https://openmtp.ganeshrvel.com/), or [SideQuest](https://sidequestvr.com/). |
+
+4. Open the app from the headset's sideloaded/unknown-source applications section.
+5. Choose **EN** or **JP** in the tutorial, then select **Start Exploring**.
 
 With no external dataset installed, the app loads the bundled sample automatically. No data conversion or separate sample transfer is required. If you have previously installed your own data, see [return to the bundled sample](docs/installation.md#return-to-the-bundled-sample).
 
@@ -65,7 +71,7 @@ Try this short first session:
 |---|---|
 | **Play / Stop**, **Timeline**, **&lt; / &gt;** | Animate, seek, or step through stored frames. |
 | **Select Event...** | Jump to an exchange, transient exchange, or merger. |
-| **Speed** / **Size** | Adjust playback rate / the visual size of black-hole spheres. |
+| **Speed** / **Size** | Adjust playback rate / the visual size scalling of black-hole spheres. |
 | **Pos: CoM / Pos: Raw** | Switch between a cluster-centred view and raw coordinates. |
 | **Follow Mode** / **Exit Follow** | Follow a selected object or binary centre of mass / leave Follow Mode. |
 | **Science: ON/OFF** | Show or hide the detailed event display when compatible science data are available. |
@@ -77,7 +83,7 @@ The main panel can be grabbed and repositioned. With it hidden, the right thumbs
 
 ## Use your own NBODY6 data
 
-Keep the app installed and replace the external dataset whenever you want to explore a different run. **You do not need Unity or a new APK for each compatible dataset.**
+Keep the app installed and replace the external dataset whenever you want to explore a different run. **You do not need Unity editor or a new APK for each compatible dataset.**
 
 1. Download [`nbody_bh_data.py`](nbody_bh_data.py) and install Python 3 with NumPy and h5py:
 
@@ -93,14 +99,7 @@ Keep the app installed and replace the external dataset whenever you want to exp
    ```
 
 4. Enter the snapshot folder, event-log folder, and output dataset-folder name. Choose **Y** to create the dataset, inspect the listed input files, and confirm them with **y**. The default `.` means the directory containing the Python script.
-5. Transfer the **complete generated folder** to the headset when prompted, or copy it manually using the appropriate method below. Restart the app to load it.
-
-| Computer | Copying your dataset to the headset |
-|---|---|
-| **Windows** | Use File Explorer after allowing USB file access on the headset; no additional file-transfer application is normally needed. |
-| **Mac** | Use an Android file-transfer tool such as [Android Debug Bridge (`adb`)](https://developer.android.com/tools/adb), [OpenMTP](https://openmtp.ganeshrvel.com/), or [SideQuest](https://sidequestvr.com/). |
-
-The same transfer tools can copy an APK; finish its installation inside the headset's Files app, or use SideQuest or ADB to install it from the computer. The converter's automatic dataset transfer uses `adb` on either OS. If a file browser cannot access the destination folder, use the [ADB transfer instructions](docs/custom-data.md#6-transfer-the-dataset-to-quest).
+5. Transfer the **complete generated folder** to the headset when prompted, or copy it manually using the transferring tools above. Restart the app to load it.
 
 The standard destination is:
 
@@ -112,7 +111,7 @@ Keep one active dataset folder in `datasets` to make selection unambiguous. Back
 
 Follow [Use your own data](docs/custom-data.md) for a complete worked example, supported input formats, transfer instructions, and conversion options. The current converter supports the documented NBODY6 output layout; arbitrary N-body file formats may require an adapter.
 
-## Edit and build the Unity project
+## Edit and build the Unity project with Unity editor
 
 To change the application itself, download or clone this repository, install **Unity 6000.0.57f1** with **Android Build Support**, and open `Assets/Scenes/SampleScene.unity`.
 
