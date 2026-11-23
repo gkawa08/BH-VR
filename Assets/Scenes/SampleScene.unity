@@ -2603,14 +2603,14 @@ MonoBehaviour:
   japaneseButton: {fileID: 117194371}
   defaultLanguage: 0
   englishSciencePage:
-    title: Welcome to NBODYVR
+    title: Welcome to BH-VR
     body: 'Globular clusters are dense, ancient systems containing hundreds of thousands
       to millions of stars. In their crowded cores, black holes undergo close gravitational
       encounters. These interactions can form binaries, replace a binary member through
       an exchange, and ultimately lead to mergers.
 
 
-      NBODYVR turns data from
+      BH-VR turns data from
       an N-body simulation into an interactive 3D experience. Follow the motion of
       black holes and explore MERGE and EXCHANGE events.'
     titleFontSize: 30
@@ -2619,11 +2619,11 @@ MonoBehaviour:
     boldTerms:
     - Globular clusters
     - black holes
-    - NBODYVR
+    - BH-VR
     - MERGE
     - EXCHANGE
   englishControlsPage:
-    title: How to Use NBODYVR
+    title: How to Use BH-VR
     body: "Play / Stop \u2014 Start or stop playback at the current snapshot.\n\nTimeline
       \u2014 Move to any snapshot in the simulation.\n\nEvent \u2014 Select a MERGE
       or EXCHANGE event and jump to just before it occurs.\n\nCoM / Raw \u2014 Switch
@@ -2656,14 +2656,14 @@ MonoBehaviour:
     finish: Start Exploring
     close: Close
   japaneseSciencePage:
-    title: Welcome to NBODYVR
-    body: "\u7403\u72B6\u661F\u56E3\u306F\u3001\u6570\u5341\u4E07\u304B\u3089\u6570\u767E\u4E07\u500B\u306E\u661F\u304C\u5BC6\u96C6\u3059\u308B\u53E4\u3044\u5929\u4F53\u3067\u3059\u3002\u305D\u306E\u4E2D\u5FC3\u90E8\u3067\u306F\u30D6\u30E9\u30C3\u30AF\u30DB\u30FC\u30EB\u304C\u91CD\u529B\u76F8\u4E92\u4F5C\u7528\u306B\u3088\u3063\u3066\u63A5\u8FD1\u3057\u3001\u9023\u661F\u7CFB(binary)\u3092\u5F62\u6210\u3057\u305F\u308A\u3001\u305D\u306E\u76F8\u624B\u3092\u7D44\u307F\u66FF\u3048(exchange)\u305F\u308A\u3001\u6700\u7D42\u7684\u306B\u306F\u5408\u4F53(merge)\u306B\u81F3\u308B\u3053\u3068\u3082\u3042\u308A\u307E\u3059\u3002\n\nNBODYVR\u3067\u306F\u3001\u5B9F\u969B\u306EN\u4F53\u30B7\u30DF\u30E5\u30EC\u30FC\u30B7\u30E7\u30F3\u30C7\u30FC\u30BF\u3092\u30A4\u30F3\u30BF\u30E9\u30AF\u30C6\u30A3\u30D6\u306A3D\u7A7A\u9593\u3067\u53EF\u8996\u5316\u3057\u3066\u3044\u307E\u3059\u3002\u30D6\u30E9\u30C3\u30AF\u30DB\u30FC\u30EB\u306E\u904B\u52D5\u3092\u4F53\u9A13\u3057\u3001MERGE\u3084EXCHANGE\u30A4\u30D9\u30F3\u30C8\u3092\u89B3\u5BDF\u3057\u307E\u3057\u3087\u3046\u3002"
+    title: Welcome to BH-VR
+    body: "\u7403\u72B6\u661F\u56E3\u306F\u3001\u6570\u5341\u4E07\u304B\u3089\u6570\u767E\u4E07\u500B\u306E\u661F\u304C\u5BC6\u96C6\u3059\u308B\u53E4\u3044\u5929\u4F53\u3067\u3059\u3002\u305D\u306E\u4E2D\u5FC3\u90E8\u3067\u306F\u30D6\u30E9\u30C3\u30AF\u30DB\u30FC\u30EB\u304C\u91CD\u529B\u76F8\u4E92\u4F5C\u7528\u306B\u3088\u3063\u3066\u63A5\u8FD1\u3057\u3001\u9023\u661F\u7CFB(binary)\u3092\u5F62\u6210\u3057\u305F\u308A\u3001\u305D\u306E\u76F8\u624B\u3092\u7D44\u307F\u66FF\u3048(exchange)\u305F\u308A\u3001\u6700\u7D42\u7684\u306B\u306F\u5408\u4F53(merge)\u306B\u81F3\u308B\u3053\u3068\u3082\u3042\u308A\u307E\u3059\u3002\n\nBH-VR\u3067\u306F\u3001\u5B9F\u969B\u306EN\u4F53\u30B7\u30DF\u30E5\u30EC\u30FC\u30B7\u30E7\u30F3\u30C7\u30FC\u30BF\u3092\u30A4\u30F3\u30BF\u30E9\u30AF\u30C6\u30A3\u30D6\u306A3D\u7A7A\u9593\u3067\u53EF\u8996\u5316\u3057\u3066\u3044\u307E\u3059\u3002\u30D6\u30E9\u30C3\u30AF\u30DB\u30FC\u30EB\u306E\u904B\u52D5\u3092\u4F53\u9A13\u3057\u3001MERGE\u3084EXCHANGE\u30A4\u30D9\u30F3\u30C8\u3092\u89B3\u5BDF\u3057\u307E\u3057\u3087\u3046\u3002"
     titleFontSize: 30
     bodyFontSize: 17
     visualTextFontSize: 10
     boldTerms:
     - "\u7403\u72B6\u661F\u56E3"
-    - NBODYVR
+    - BH-VR
     - MERGE
     - EXCHANGE
     - "\u30D6\u30E9\u30C3\u30AF\u30DB\u30FC\u30EB"
@@ -6158,7 +6158,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 25
+  m_ScrollSensitivity: 1
   m_Viewport: {fileID: 1420402250}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}

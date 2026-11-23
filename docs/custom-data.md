@@ -2,7 +2,7 @@
 
 [Back to the README](../README.md) · [Installation](installation.md) · [Unity development](development.md) · [Science Mode](science-mode.md)
 
-The converter reads one NBODY6 run and builds a self-contained NBody-VR dataset folder.
+The converter reads one NBODY6 run and builds a self-contained BH-VR dataset folder.
 
 ## 1. Prepare the input directory
 
@@ -175,7 +175,7 @@ For manual file transfer on **Windows**, use File Explorer; normally no extra tr
 
 The headset may be shown as internal shared storage in a file browser; its storage root corresponds to `/sdcard` in the ADB path above. If the device or destination folder is not accessible in a file browser, use ADB. The converter's automatic transfer requires ADB on either OS. The same file-transfer tools can copy an APK, which can then be installed inside the headset on supported OS versions; see the [installation guide](installation.md#copy-the-apk-and-install-it-inside-the-headset).
 
-If Android has not created the package directory, launch the installed application once and try again. Restart NBody-VR after adding or replacing a dataset.
+If Android has not created the package directory, launch the installed application once and try again. Restart BH-VR after adding or replacing a dataset.
 
 ## Dataset selection and fallback
 

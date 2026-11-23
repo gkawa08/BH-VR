@@ -11,7 +11,7 @@ You need:
 - A Meta Quest headset with its controllers.
 - A computer with an internet connection.
 - A USB cable that supports data transfer; Thunderbolt is not required.
-- The APK from [GitHub Releases](https://github.com/gkawa08/nbody-vr-visualizer-unity/releases).
+- The APK from [GitHub Releases](https://github.com/gkawa08/BH-VR/releases).
 
 Use the following tools to copy the APK or your own simulation dataset to the headset:
 
@@ -60,22 +60,22 @@ The Files-app installation route is described in [SideQuest's headset-installati
 Use SideQuest's APK installation option, or [Android SDK Platform Tools](https://developer.android.com/tools/releases/platform-tools), which includes ADB. These methods can install the APK from either Windows or Mac:
 
 ```bash
-adb install /path/to/NBodyVis.apk
+adb install /path/to/downloaded.apk
 ```
 
-On Windows, use your downloaded file's actual path; PowerShell users running ADB from its extracted folder may need `./adb.exe` in place of `adb`. If Platform Tools is not on PATH on macOS, use `./adb` from its folder or its full path.
+Use your downloaded file's actual path. On Windows, PowerShell users running ADB from its extracted folder may need `./adb.exe` in place of `adb`. If Platform Tools is not on PATH on macOS, use `./adb` from its folder or its full path.
 
 For an update signed with the same key, use:
 
 ```bash
-adb install -r /path/to/NBodyVis.apk
+adb install -r /path/to/downloaded.apk
 ```
 
 If installation reports an incompatible signature, do not uninstall the existing app before backing up any imported data you want to keep. A build made on another computer may use a different signing key; see [signing and installed data](development.md#signing-and-installed-data).
 
 ## 4. Launch and try the sample
 
-1. Open the headset's sideloaded/unknown-source applications section and launch NBody-VR.
+1. Open the headset's sideloaded/unknown-source applications section and launch **BH-VR**. Older APKs may appear as **NBodyVis**.
 2. Choose **EN** or **JP** in the two-page tutorial.
 3. Select **Start Exploring**.
 4. Press **Play**.

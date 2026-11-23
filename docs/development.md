@@ -31,8 +31,8 @@ Install [Unity Hub](https://unity.com/download), sign in, and activate the Unity
 For Git-based development:
 
 ```bash
-git clone https://github.com/gkawa08/nbody-vr-visualizer-unity.git
-cd nbody-vr-visualizer-unity
+git clone https://github.com/gkawa08/BH-VR.git
+cd BH-VR
 ```
 
 The bundled sample is part of the source project. Python and the source HDF5 are not required to open it. You do not need to attach your own CSV files in the Inspector to test the bundled sample.
@@ -53,7 +53,7 @@ If Unity reports a missing dependency or asks to upgrade the project, first comp
 | `Assets/MainCanvasPlayerFacingGrab.cs` | Grabbable panel orientation. |
 | `Assets/Editor/ScienceModeSetupEditor.cs` | Unity Editor command that creates or repairs the Science Mode scroll panel. |
 | `Assets/StreamingAssets/NBODYVR_Data/` | Bundled fallback dataset packaged in the APK. |
-| `nbody_bh_data.py` | NBODY6-to-NBody-VR conversion and optional ADB transfer. |
+| `nbody_bh_data.py` | NBODY6-to-BH-VR conversion and optional ADB transfer. |
 
 ## Replace the bundled sample
 
@@ -94,7 +94,7 @@ The main panel is an XR grab interactable with `MainCanvasPlayerFacingGrab`. If 
 With `SampleScene` open, use:
 
 ```text
-Tools > NBODY VR > Configure Science Mode
+Tools > BH-VR > Configure Science Mode
 ```
 
 The editor command finds the scene's `CsvVisualizer` and `MainCanvas`, creates or updates `ScienceDataPanel`, adds its scroll viewport and TextMesh Pro content, reconnects the science references, and marks the scene dirty. Save the scene after running the command, then enter Play Mode to verify it.
@@ -105,9 +105,9 @@ The command sets legacy science filenames and playback defaults while configurin
 
 1. Complete the [headset connection and USB-authorization steps](installation.md#2-connect-the-headset).
 2. Open **File > Build Profiles** in the recorded Unity 6 editor and select **Android**. Switch to that platform and allow any reimport to finish.
-3. Confirm that `Assets/Scenes/SampleScene.unity` is enabled in the scene list.
+3. Confirm that `Assets/Scenes/SampleScene.unity` is enabled in the scene list and that **Edit > Project Settings > Player > Product Name** is set to **BH-VR**.
 4. Keep the package identifier `com.kawashima.bhvisualizer` consistent with the transfer path. If you change it, use the same value with the converter's `--package-name` option.
-5. Select the connected Quest as the run device and choose **Build And Run**. Save build output outside the source directories, for example under an ignored `Builds` folder.
+5. Select the connected Quest as the run device and choose **Build And Run**. Save the output as `BH-VR.apk` outside the source directories, for example as `Builds/BH-VR.apk`.
 6. Alternatively, build an APK and install it with SideQuest or ADB using the [installation guide](installation.md#3-install-the-apk).
 
 Check that Unity uses its installed Android tools under **Settings/Preferences > External Tools** if it reports SDK, NDK, or JDK errors.
@@ -133,7 +133,7 @@ Use the GitHub source and bundled sample first, without copying untracked files 
 1. Import the project without unresolved package or compilation errors.
 2. Build and install the APK.
 3. Open the tutorial and start sample playback on the headset.
-4. Select an exchange and a merger; inspect Science Mode, Follow Mode, timeline controls, and camera reset.
+4. Select an exchange and a merger. In Science Mode, use the thumbstick to scroll to the middle of the output, stop, and scroll back. Test trigger dragging, Follow Mode, timeline controls, and camera reset.
 5. Make one small visible UI change, rebuild, and confirm the changed build is running.
 6. Separately convert and transfer a supported custom dataset, then restart the app and check that it takes priority over the sample.
 

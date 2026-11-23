@@ -8,14 +8,14 @@ using UnityEngine.UI;
 
 public static class ScienceModeSetupEditor
 {
-    [MenuItem("Tools/NBODY VR/Configure Science Mode")]
+    [MenuItem("Tools/BH-VR/Configure Science Mode")]
     public static void Configure()
     {
         CsvVisualizer visualizer = Resources.FindObjectsOfTypeAll<CsvVisualizer>()
             .FirstOrDefault(item => item.gameObject.scene.IsValid());
         if (visualizer == null)
         {
-            EditorUtility.DisplayDialog("NBODY VR", "CsvVisualizer was not found in the open scene.", "OK");
+            EditorUtility.DisplayDialog("BH-VR", "CsvVisualizer was not found in the open scene.", "OK");
             return;
         }
 
@@ -27,7 +27,7 @@ public static class ScienceModeSetupEditor
         }
         if (visualizer.mainCanvas == null)
         {
-            EditorUtility.DisplayDialog("NBODY VR", "MainCanvas was not found.", "OK");
+            EditorUtility.DisplayDialog("BH-VR", "MainCanvas was not found.", "OK");
             return;
         }
 
@@ -63,7 +63,7 @@ public static class ScienceModeSetupEditor
         EditorSceneManager.MarkSceneDirty(visualizer.gameObject.scene);
         Selection.activeGameObject = panel;
         EditorUtility.DisplayDialog(
-            "NBODY VR",
+            "BH-VR",
             "Science Mode is configured. Save the scene and enter Play Mode.",
             "OK"
         );
@@ -149,7 +149,7 @@ public static class ScienceModeSetupEditor
         scroll.vertical = true;
         scroll.movementType = ScrollRect.MovementType.Elastic;
         scroll.inertia = true;
-        scroll.scrollSensitivity = 25f;
+        scroll.scrollSensitivity = 1f;
         scroll.verticalNormalizedPosition = 1f;
         return text;
     }
