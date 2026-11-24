@@ -274,7 +274,7 @@ def parse_exchange_line(line):
     }
 
 
-def parse_scaling(output_files):
+def parse_scaling(output_files, log_dir=None):
     for path in output_files:
         with open(path, "r", errors="replace") as stream:
             for line in stream:
@@ -286,7 +286,9 @@ def parse_scaling(output_files):
                         "mass": mstar,
                         "velocity": vstar,
                         "time": tstar,
-                        "source": os.path.basename(path),
+                        "source": (
+                            os.path.relpath(path, log_dir) if log_dir is not None else os.path.basename(path)
+                        ),
                     }
     return {
         "length": 3.10,
@@ -318,25 +320,21 @@ def parse_chain_escape(line):
 
 
 def find_output_files(log_dir):
-    output_files = sorted(
-        (
+    for pattern in ("*_output/output.dat", "*_output.dat", "output.dat"):
+        output_files = [
             path
-            for path in glob.glob(os.path.join(log_dir, "*_output.dat"))
+            for path in glob.glob(os.path.join(glob.escape(log_dir), pattern))
             if os.path.isfile(path)
-        ),
-        key=natural_key,
-    )
-    if output_files:
-        return output_files
-    fallback = os.path.join(log_dir, "output.dat")
-    if os.path.isfile(fallback):
-        return [fallback]
+        ]
+        if output_files:
+            return sorted(output_files, key=natural_key)
     raise FileNotFoundError(
-        f"No *_output.dat or output.dat files were found in {log_dir}"
+        f"No event logs were found in {log_dir}. "
+        "Expected *_output/output.dat, *_output.dat, or output.dat."
     )
 
 
-def parse_logs(output_files, bh_type, time_conv):
+def parse_logs(output_files, bh_type, time_conv, log_dir=None):
     raw_events = []
     cluster_log = []
     coal_lines_found = 0
@@ -344,6 +342,7 @@ def parse_logs(output_files, bh_type, time_conv):
     sequence = 0
     maximum_time_nbody = 0.0
     for path in output_files:
+        source = os.path.relpath(path, log_dir) if log_dir is not None else os.path.basename(path)
         current_time = 0.0
         expect_summary = False
         last_exchange = None
@@ -378,7 +377,7 @@ def parse_logs(output_files, bh_type, time_conv):
                                 "time_nbody": current_time,
                                 "time_myr": current_time * time_conv,
                                 "event_list": "EXCHANGE",
-                                "source": os.path.basename(path),
+                                "source": source,
                                 "sequence": sequence,
                                 "chain_binary_vcm": None,
                                 "chain_escape_vf": None,
@@ -416,7 +415,7 @@ def parse_logs(output_files, bh_type, time_conv):
                             "id2": id2,
                             "id3": None,
                             "id4": None,
-                            "source": os.path.basename(path),
+                            "source": source,
                             "sequence": sequence,
                         }
                     )
@@ -435,7 +434,7 @@ def parse_logs(output_files, bh_type, time_conv):
                                 "id2": ids[1],
                                 "id3": None,
                                 "id4": None,
-                                "source": os.path.basename(path),
+                                "source": source,
                                 "sequence": sequence,
                             }
                         )
@@ -1623,7 +1622,10 @@ def resolve_arguments():
         "--data-dir",
         help="Snapshot directory (.hdf5); defaults to .",
     )
-    parser.add_argument("--log-dir", help="Event log directory; defaults to .")
+    parser.add_argument(
+        "--log-dir",
+        help="Directory containing *_output/output.dat, *_output.dat, or output.dat; defaults to .",
+    )
     parser.add_argument("--output-dir")
     parser.add_argument("--hdf5", default="")
     parser.add_argument("--package-name", default="com.kawashima.bhvisualizer")
@@ -1646,7 +1648,7 @@ def resolve_arguments():
         args.data_dir = input("Enter snapshot directory (.hdf5) [default: .]: ").strip() or "."
     if args.log_dir is None:
         args.log_dir = (
-            input("Enter event log directory (*_output.dat or output.dat) [default: .]: ").strip()
+            input("Enter event log directory (containing *_output folders or .dat logs) [default: .]: ").strip()
             or "."
         ) if interactive else "."
     if args.output_dir is None:
@@ -1716,8 +1718,15 @@ def main():
         raise ValueError("Use letters, digits, underscores or hyphens for the dataset folder name.")
     output_files = find_output_files(log_dir)
     hdf5_path = choose_hdf5(data_dir, args.hdf5)
-    for input_dir in (data_dir, log_dir, os.path.dirname(hdf5_path)):
-        if os.path.commonpath([os.path.realpath(destination_dir), os.path.realpath(input_dir)]) == os.path.realpath(destination_dir):
+    input_dirs = (
+        data_dir,
+        log_dir,
+        os.path.dirname(hdf5_path),
+        *(os.path.dirname(path) for path in output_files),
+    )
+    destination_path = os.path.realpath(destination_dir)
+    for input_dir in input_dirs:
+        if os.path.commonpath([destination_path, os.path.realpath(input_dir)]) == destination_path:
             raise ValueError("The dataset folder must not contain or equal an NBODY input folder.")
     print(f"HDF5 file: {hdf5_path}")
     print("Log files to read:")
@@ -1726,7 +1735,7 @@ def main():
     if input("Are these files correct? (y/n) [default: n]: ").strip().lower() not in ("y", "yes"):
         print("Cancelled.")
         return
-    detected = parse_scaling(output_files)
+    detected = parse_scaling(output_files, log_dir)
     scaling = {
         "mass": args.mass_conv if args.mass_conv is not None else detected["mass"],
         "length": args.length_conv if args.length_conv is not None else detected["length"],
@@ -1740,7 +1749,7 @@ def main():
     )
     keys = validate_input(hdf5_path, scaling)
     keys = select_snapshot_keys(hdf5_path, keys, scaling["time"], args.max_time_myr)
-    logs = parse_logs(output_files, args.bh_type, scaling["time"])
+    logs = parse_logs(output_files, args.bh_type, scaling["time"], log_dir)
     logs = limit_logs_to_time(logs, args.max_time_myr, scaling["time"])
     if args.check_only:
         print(f"Logs readable: {len(logs['output_files'])} files; {len(logs['raw_events'])} parsed event records.")
@@ -1872,7 +1881,7 @@ def main():
     write_csv(paths["science_cluster"], CLUSTER_COLUMNS, cluster_rows)
     report = {
         "hdf5": hdf5_path,
-        "output_files": [os.path.basename(path) for path in logs["output_files"]],
+        "output_files": [os.path.relpath(path, log_dir) for path in logs["output_files"]],
         "scaling": scaling,
         "snapshot_count": len(frames),
         "bh_history_rows": len(history_rows),
