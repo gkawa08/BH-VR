@@ -1938,6 +1938,6 @@ if __name__ == "__main__":
     try:
         main()
     except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
-        print(f"NBODYVR: {error}\nInput files are unchanged. Check the paths and input format, then retry.", file=sys.stderr)
+        print(f"BH-VR: {error}\nInput files are unchanged. Check the paths and input format, then retry.", file=sys.stderr)
         sys.exit(1)
 

@@ -35,7 +35,7 @@ Positions and velocities come from stored simulation snapshots, and event times 
 
 You need a Meta Quest headset, a computer, and a data cable.
 
-1. Download the APK from [GitHub Releases](https://github.com/gkawa08/nbody-vr-visualizer-unity/releases).
+1. Download the APK from [GitHub Releases](https://github.com/gkawa08/BH-VR/releases).
 2. Transfer the APK into your headset's **Files** app. Recommended instructions are below:
 
 | Computer | Instructions |

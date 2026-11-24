@@ -2,6 +2,8 @@
 
 [Back to the README](../README.md) · [Installation](installation.md) · [Use your own data](custom-data.md) · [Unity development](development.md)
 
+Point the controller ray at the Science Mode output and use the thumbstick to scroll. You can also hold the trigger and drag the output.
+
 ## Event display examples
 
 ### Exchange event
@@ -15,8 +17,8 @@
   </thead>
   <tbody>
     <tr>
-      <td width="50%" align="center"><img src="../screenshots/Exchange_before.png" alt="NBody-VR display immediately before an exchange event" width="100%"></td>
-      <td width="50%" align="center"><img src="../screenshots/Exchange_after.png" alt="NBody-VR display immediately after an exchange event" width="100%"></td>
+      <td width="50%" align="center"><img src="../screenshots/Exchange_before.png" alt="BH-VR display immediately before an exchange event" width="100%"></td>
+      <td width="50%" align="center"><img src="../screenshots/Exchange_after.png" alt="BH-VR display immediately after an exchange event" width="100%"></td>
     </tr>
     <tr>
       <td width="50%">The original binary members are magenta and the incoming 'interloper' is red.</td>
@@ -36,8 +38,8 @@
   </thead>
   <tbody>
     <tr>
-      <td width="50%" align="center"><img src="../screenshots/Merge_before.png" alt="NBody-VR display immediately before a merger" width="100%"></td>
-      <td width="50%" align="center"><img src="../screenshots/Merge_after.png" alt="NBody-VR display immediately after a merger" width="100%"></td>
+      <td width="50%" align="center"><img src="../screenshots/Merge_before.png" alt="BH-VR display immediately before a merger" width="100%"></td>
+      <td width="50%" align="center"><img src="../screenshots/Merge_after.png" alt="BH-VR display immediately after a merger" width="100%"></td>
     </tr>
     <tr>
       <td width="50%">The two pre-merge binary members are highlighted in magenta.</td>

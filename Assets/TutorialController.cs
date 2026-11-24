@@ -114,15 +114,15 @@ public class TutorialController : MonoBehaviour
 
     [Header("Tutorial Content - English")]
     [SerializeField] private TutorialPage englishSciencePage = new TutorialPage(
-        "Welcome to NBODYVR",
-        "Globular clusters are dense, ancient systems containing hundreds of thousands to millions of stars. Their black holes move toward the center, where close encounters can form binaries, exchange companions, and lead to mergers.\n\nNBODYVR turns an N-body simulation into an interactive 3D view. Explore black-hole motion and inspect MERGE and EXCHANGE events.",
+        "Welcome to BH-VR",
+        "Globular clusters are dense, ancient systems containing hundreds of thousands to millions of stars. Their black holes move toward the center, where close encounters can form binaries, exchange companions, and lead to mergers.\n\nBH-VR turns an N-body simulation into an interactive 3D view. Explore black-hole motion and inspect MERGE and EXCHANGE events.",
         "Globular clusters",
-        "NBODYVR",
+        "BH-VR",
         "MERGE",
         "EXCHANGE"
     );
     [SerializeField] private TutorialPage englishControlsPage = new TutorialPage(
-        "How to use NBODYVR",
+        "How to use BH-VR",
         "Play / Timeline — Start, pause, or inspect a snapshot.\nEvent — Jump to just before a MERGE or EXCHANGE.\nCoM / Raw — Switch the reference frame.\nSpeed / Size — Adjust playback speed and BH size.\nScience Mode — Show masses, velocities, and pair properties.",
         "Play / Timeline",
         "Event",
@@ -147,10 +147,10 @@ public class TutorialController : MonoBehaviour
 
     [Header("Tutorial Content - Japanese")]
     [SerializeField] private TutorialPage japaneseSciencePage = new TutorialPage(
-        "Welcome to NBODYVR",
-        "球状星団は、数十万から数百万個の星が密集する古い天体です。ブラックホールは中心部に集まり、近接遭遇によって連星の形成、相手の組み替え、合体が起こります。\n\nNBODYVRでは、N体シミュレーションをインタラクティブな3D空間で探索し、MERGEとEXCHANGEイベントを観察できます。",
+        "Welcome to BH-VR",
+        "球状星団は、数十万から数百万個の星が密集する古い天体です。ブラックホールは中心部に集まり、近接遭遇によって連星の形成、相手の組み替え、合体が起こります。\n\nBH-VRでは、N体シミュレーションをインタラクティブな3D空間で探索し、MERGEとEXCHANGEイベントを観察できます。",
         "球状星団",
-        "NBODYVR",
+        "BH-VR",
         "MERGE",
         "EXCHANGE"
     );
