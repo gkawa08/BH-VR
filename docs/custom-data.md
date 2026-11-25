@@ -9,7 +9,7 @@ The converter reads one NBODY6 run and builds a self-contained BH-VR dataset fol
 Prepare HDF5 snapshots and event logs from the same simulation. They may be in one directory or in separate directories:
 
 - **Snapshots:** `snapdata.hdf5`. The script also recognizes `snapsdata.hdf5`; use `--hdf5` for another filename.
-- **Event logs:** one or more files named `*_output.dat`. If no such files exist in the selected log directory, the script uses `output.dat` instead. When both naming styles are present, it reads the `*_output.dat` files only.
+- **Event logs:** select the parent directory containing `0_output/output.dat`, `1_output/output.dat`, and any further `*_output/output.dat` files. The converter reads those files in numeric order. If there are no such files, it reads `*_output.dat` files in the selected directory, or falls back to a single `output.dat`. It uses the first matching layout to avoid reading duplicate copies of the logs.
 
 For a simple example, place `nbody_bh_data.py` beside a folder named `NBODY6` containing the HDF5 file and logs. In the guided prompts below, enter `NBODY6` for both input folders. The input logs must correspond to the selected HDF5 run; the structure check does not independently establish their common provenance.
 
@@ -39,7 +39,7 @@ The script asks for the snapshot directory, event-log directory, and output fold
 
 ```text
 Enter snapshot directory (.hdf5) [default: .]: NBODY6
-Enter event log directory (*_output.dat or output.dat) [default: .]: NBODY6
+Enter event log directory (containing *_output folders or .dat logs) [default: .]: NBODY6
 Dataset folder [default: NBODYVR_Data]: MyCluster
 
 Choose what to do:
@@ -83,7 +83,7 @@ Useful options are:
 | Option | Purpose |
 |---|---|
 | `--data-dir DIR` | Select the HDF5 snapshot directory. |
-| `--log-dir DIR` | Select the event-log directory. Its default is the script directory, including when `--data-dir` points elsewhere. |
+| `--log-dir DIR` | Select the parent of the `*_output` folders or the directory containing flat `.dat` logs. Its default is the script directory, including when `--data-dir` points elsewhere. |
 | `--output-dir DIR` | Name the generated dataset folder. |
 | `--hdf5 FILE` | Select a particular HDF5 filename inside `--data-dir`. Without it, the script looks for `snapdata.hdf5` and then `snapsdata.hdf5`. |
 | `--check-only` | Validate the HDF5 structure and parse the logs without writing or transferring a dataset. |
@@ -193,7 +193,7 @@ The dataset dropdown is currently hidden, so keep only one active non-backup dat
 
 | Message or symptom | What to check |
 |---|---|
-| `No *_output.dat or output.dat files were found` | Confirm the selected event-log folder (`--log-dir`) and supported filenames. The snapshot folder is selected separately. |
+| `No event logs were found` | Point `--log-dir` to the parent containing `*_output/output.dat`, `*_output.dat`, or `output.dat`. Select the snapshot directory separately. |
 | `snapdata.hdf5 or snapsdata.hdf5 was not found` | Supply the expected filename or use `--hdf5`. |
 | `No snap_* snapshots were found` | Check the HDF5 group layout. |
 | `missing datasets` or `inconsistent particle array sizes` | Compare the snapshot structure with the required fields listed above. |
